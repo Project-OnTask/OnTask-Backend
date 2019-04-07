@@ -16,6 +16,8 @@ import com.itsfive.back.payload.SignUpRequest;
 import com.itsfive.back.repository.RoleRepository;
 import com.itsfive.back.repository.UserRepository;
 import com.itsfive.back.security.JwtTokenProvider;
+import com.itsfive.back.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.validation.Valid;
 
 import java.io.ByteArrayOutputStream;
@@ -46,7 +50,10 @@ public class AuthController {
 
     @Autowired
     UserRepository userRepository;
-
+    
+    @Autowired
+    public UserService userService;
+    
     @Autowired
     RoleRepository roleRepository;
 
@@ -73,7 +80,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) throws AddressException, MessagingException, IOException {
         if(userRepository.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
@@ -90,13 +97,14 @@ public class AuthController {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Roles userRole = roleRepository.findByName(RoleName.ROLE_USER)
+        /*Roles userRole = roleRepository.findByName(RoleName.ROLE_USER)
                 .orElseThrow(() -> new AppException("User Role not set."));
 
-        user.setRoles(Collections.singleton(userRole));
-
+        user.setRoles(Collections.singleton(userRole)); */
+        
         User result = userRepository.save(user);
-
+        userService.sendmail(signUpRequest.getEmail(),"Confirm your email");
+        
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
                 .buildAndExpand(result.getUsername()).toUri();
