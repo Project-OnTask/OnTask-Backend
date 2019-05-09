@@ -16,11 +16,16 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-	
+    @Autowired
+    private Environment env;
+    
 	public void sendmail(String email,String subject) throws AddressException, MessagingException, IOException {
 		   Properties props = new Properties();
 		   props.put("mail.smtp.auth", "true");
@@ -28,13 +33,15 @@ public class UserService {
 		   props.put("mail.smtp.host", "smtp.gmail.com");
 		   props.put("mail.smtp.port", "587");
 		   
+		   String MailPassword = env.getProperty("spring.mail.password");
+		   
 		   Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 		      protected PasswordAuthentication getPasswordAuthentication() {
-		         return new PasswordAuthentication("plumberhl@gmail.com", "LordBudhdha");
+		         return new PasswordAuthentication("plumberhl@gmail.com", MailPassword);
 		      }
 		   });
 		   Message msg = new MimeMessage(session);
-		   msg.setFrom(new InternetAddress("tutorialspoint@gmail.com", false));
+		   msg.setFrom(new InternetAddress("plumberhl@gmail.com", false));
 
 		   msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
 		   msg.setSubject(subject);
