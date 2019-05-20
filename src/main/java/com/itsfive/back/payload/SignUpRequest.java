@@ -4,8 +4,8 @@ import javax.validation.constraints.*;
 
 public class SignUpRequest {
 	 @NotBlank
-	    @Size(min = 4, max = 40)
-	    private String name;
+	    @Size(min = 4, max = 30)
+	    private String fname;
 
 	    @NotBlank
 	    @Size(min = 3, max = 40)
@@ -20,12 +20,12 @@ public class SignUpRequest {
 	    @Size(min = 6, max = 20)
 	    private String password;
 
-	    public String getName() {
-	        return name;
+	    public String getFName() {
+	        return fname;
 	    }
 
-	    public void setName(String name) {
-	        this.name = name;
+	    public void setFName(String name) {
+	        this.fname = name;
 	    }
 
 	    public String getUsername() {

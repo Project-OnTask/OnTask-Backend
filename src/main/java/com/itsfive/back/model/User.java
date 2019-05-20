@@ -26,20 +26,23 @@ public class User extends DateAudit{
     private Long id;
 
     @NotBlank
-    @Size(max = 40)
-    private String name;
+    @Size(max = 30)
+    private String fname;
+    
+    @Size(max = 30)
+    private String lname;
 
-    @NotBlank
     @Size(max = 40)
     private String username;
 
-    @NaturalId
-    @NotBlank
+    @Size(max = 30)
+    @Column(unique=true)
+    private String mobile;
+
     @Size(max = 40)
     @Email
     private String email;
 
-    @NotBlank
     @Size(max = 100)
     private String password;
     
@@ -55,10 +58,15 @@ public class User extends DateAudit{
     public User() {
 
     }
+    
+    public User(String fname,String mobile) {
+    	this.fname = fname;
+    	this.mobile = mobile;
+    }
 
     public User(String name, String username, String email, String password) {
     	this.enabled = false;
-        this.name = name;
+        this.fname = name;
         this.username = username;
         this.email = email;
         this.password = password;
@@ -80,12 +88,12 @@ public class User extends DateAudit{
         this.username = username;
     }
 
-    public String getName() {
-        return name;
+    public String getFName() {
+        return fname;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.fname = name;
     }
 
     public String getEmail() {
@@ -102,6 +110,14 @@ public class User extends DateAudit{
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public String getMobile() {
+        return password;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public Set<Roles> getRoles() {

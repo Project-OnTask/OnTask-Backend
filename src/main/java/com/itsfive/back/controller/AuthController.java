@@ -12,6 +12,7 @@ import com.itsfive.back.model.User;
 import com.itsfive.back.payload.ApiResponse;
 import com.itsfive.back.payload.JwtAuthenticationResponse;
 import com.itsfive.back.payload.LoginRequest;
+import com.itsfive.back.payload.MobileSignupRequest;
 import com.itsfive.back.payload.SignUpRequest;
 import com.itsfive.back.repository.RoleRepository;
 import com.itsfive.back.repository.UserRepository;
@@ -92,7 +93,7 @@ public class AuthController {
         }
 
         // Creating user's account
-        User user = new User(signUpRequest.getName(), signUpRequest.getUsername(),
+        User user = new User(signUpRequest.getFName(), signUpRequest.getUsername(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -108,6 +109,26 @@ public class AuthController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
                 .buildAndExpand(result.getUsername()).toUri();
+
+        return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
+    }
+    
+    @PostMapping("/signup/mobile")
+    public ResponseEntity<?> registerMobileUser(@Valid @RequestBody MobileSignupRequest mobileSignupRequest) throws IOException {
+        if(userRepository.existsByMobile(mobileSignupRequest.getMobile())) {
+            return new ResponseEntity(new ApiResponse(false, "This mobile is already in use!"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // Creating user's account
+        User user = new User(mobileSignupRequest.getFName(), mobileSignupRequest.getMobile());
+        
+        User result = userRepository.save(user);
+// Sending sms to provided mobile number
+        
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/api/users/{mobile}")
+                .buildAndExpand(result.getMobile()).toUri();
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
     }
