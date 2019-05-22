@@ -24,14 +24,14 @@ public class User extends DateAudit{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotBlank
+	
+	@NotBlank
     @Size(max = 30)
     private String fname;
     
     @Size(max = 30)
     private String lname;
-
+    
     @Size(max = 40)
     private String username;
 
@@ -49,14 +49,24 @@ public class User extends DateAudit{
     @Column(name = "enabled")
     private boolean enabled;
     
+    @ManyToMany
+    @JoinTable(
+    name = "user_group", 
+    joinColumns = @JoinColumn(name = "user_id"), 
+    inverseJoinColumns = @JoinColumn(name = "group_id"))
+    Set<Group> joinedGroups;
+    
+    @OneToMany(mappedBy = "user")
+    Set<GroupMembers> role;
+    
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Roles> roles = new HashSet<>();
-
+   
     public User() {
-
+    	
     }
     
     public User(String fname,String mobile) {
@@ -71,8 +81,8 @@ public class User extends DateAudit{
         this.email = email;
         this.password = password;
     }
-
-    public Long getId() {
+    
+	public Long getId() {
         return id;
     }
 

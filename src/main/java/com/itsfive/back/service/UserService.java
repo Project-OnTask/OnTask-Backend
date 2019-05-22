@@ -2,6 +2,7 @@ package com.itsfive.back.service;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -21,10 +22,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import com.itsfive.back.model.User;
+import com.itsfive.back.repository.UserRepository;
+
 @Service
 public class UserService {
     @Autowired
     private Environment env;
+    
+    @Autowired
+    private UserRepository userRepository;
     
 	public void sendmail(String email,String subject) throws AddressException, MessagingException, IOException {
 		   Properties props = new Properties();
@@ -60,4 +67,8 @@ public class UserService {
 		   msg.setContent(multipart);*/
 		   Transport.send(msg);   
 		}
+
+	public Optional<User> getUserById(Long id) {
+		return userRepository.findById(id);
+	}
 }
