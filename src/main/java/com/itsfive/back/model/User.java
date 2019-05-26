@@ -73,6 +73,11 @@ public class User extends DateAudit{
     	this.fname = fname;
     	this.mobile = mobile;
     }
+    
+    public User(Long id,String fname) {
+    	this.id = id;
+    	this.fname = fname;
+    }
 
     public User(String name, String username, String email, String password) {
     	this.enabled = false;
