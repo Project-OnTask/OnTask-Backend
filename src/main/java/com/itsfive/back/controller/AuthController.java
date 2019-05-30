@@ -6,7 +6,9 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.itsfive.back.exception.AppException;
+import com.itsfive.back.exception.UserNotFoundException;
 import com.itsfive.back.model.Roles;
+import com.itsfive.back.model.HTMLMail;
 import com.itsfive.back.model.RoleName;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.ApiResponse;
@@ -19,6 +21,7 @@ import com.itsfive.back.repository.UserRepository;
 import com.itsfive.back.security.CurrentUser;
 import com.itsfive.back.security.JwtTokenProvider;
 import com.itsfive.back.security.UserPrincipal;
+import com.itsfive.back.service.MailSenderService;
 import com.itsfive.back.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,17 +37,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -59,6 +68,9 @@ public class AuthController {
     public UserService userService;
     
     @Autowired
+    public MailSenderService mailSenderService;
+    
+    @Autowired
     RoleRepository roleRepository;
 
     @Autowired
@@ -67,6 +79,9 @@ public class AuthController {
     @Autowired
     JwtTokenProvider tokenProvider;
 
+    @Autowired
+    private MailSenderService senderService;
+    
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -108,7 +123,6 @@ public class AuthController {
         user.setRoles(Collections.singleton(userRole)); */
         
         User result = userRepository.save(user);
-        userService.sendmail(signUpRequest.getEmail(),"Confirm your email");
         
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
@@ -150,7 +164,32 @@ public class AuthController {
 
     @GetMapping("/user/me")
     public User getCurrentUser(@CurrentUser UserPrincipal currentUser) {
+    	if(currentUser.getId() == null) {
+    		throw new UserNotFoundException("user");
+    	}
         User userSummary = new User(currentUser.getId(),currentUser.getFName());
+        
         return userSummary;
+    }
+    
+    @PostMapping("/{email}/genToken")
+    public void generateResetToken( @PathVariable String email) throws MessagingException {
+    	Optional<User> user = userService.getUserByEmail(email);
+    	if(!user.isPresent()) {
+    		throw new UserNotFoundException(email);
+    	}
+    	 String token = UUID.randomUUID().toString();
+    	 userService.createResetTokenForUser(user.get(), token);
+    	 
+    	 String content = "<html>" +
+                 "<body>" +
+                 "<p>Hello "+ user.get().getFName()+",</p>" +
+                 "<p>Click <a href=\"http://localhost:3000/reset-password/?token="+token+"\">here</a> to reset your password</p>" +
+             "</body>" +
+         "</html>";
+    	 
+    	 HTMLMail htmlMail = new HTMLMail(user.get().getEmail(),"OnTask - reset password",content);
+    	 
+    	 mailSenderService.sendHTMLMail(htmlMail);
     }
 }
