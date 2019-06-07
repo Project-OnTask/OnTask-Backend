@@ -41,6 +41,7 @@ public class User extends DateAudit{
 
     @Size(max = 40)
     @Email
+    @Column(name="email")
     private String email;
 
     @Size(max = 100)
@@ -49,15 +50,15 @@ public class User extends DateAudit{
     @Column(name = "enabled")
     private boolean enabled;
     
-    @ManyToMany
-    @JoinTable(
-    name = "user_group", 
-    joinColumns = @JoinColumn(name = "user_id"), 
-    inverseJoinColumns = @JoinColumn(name = "group_id"))
-    Set<Group> joinedGroups;
+//    @ManyToMany
+//    @JoinTable(
+//    name = "user_group", 
+//    joinColumns = @JoinColumn(name = "user_id"), 
+//    inverseJoinColumns = @JoinColumn(name = "group_id"))
+//    Set<Group> joinedGroups;
     
     @OneToMany(mappedBy = "user")
-    Set<GroupMembers> role;
+    Set<GroupMember> role;
     
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
@@ -105,6 +106,10 @@ public class User extends DateAudit{
 
     public String getFName() {
         return fname;
+    }
+    
+    public void setFName(String fname) {
+       this.fname = fname;
     }
 
     public void setName(String name) {

@@ -28,13 +28,33 @@ public class PasswordResetToken {
   
     private Date expiryDate;
     
-    public PasswordResetToken(User user,String token) {
+    public Date getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Date expiryDate) {
+		this.expiryDate = expiryDate;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public PasswordResetToken(User user,String token) {
     	this.user = user;
     	this.token = token;
     	Calendar calendar = Calendar.getInstance(); // gets a calendar using the default time zone and locale.
     	calendar.add(Calendar.SECOND, EXPIRATION);
     	this.expiryDate = calendar.getTime();
     }
+	
+	public PasswordResetToken() {
+		
+	}
     
     public void setToken(String token) {
     	this.token = token;
