@@ -55,6 +55,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    public PasswordEncoder passwordEncoder() {
 	        return new BCryptPasswordEncoder();
 	    }
+	    
+	    private static final String[] AUTH_WHITELIST = {
+	            "/swagger-resources/**",
+	            "/swagger-ui.html",
+	            "/v2/api-docs",
+	            "/webjars/**"
+	    };
 
 	    @Override
 	    protected void configure(HttpSecurity http) throws Exception {
@@ -76,15 +83,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	                        "/**/*.gif",
 	                        "/**/*.svg",
 	                        "/**/*.jpg",
-	                        "/**/*.html",
+	                        "/*.html",
 	                        "/**/*.css",
 	                        "/**/*.js")
 	                        .permitAll()
 	                    .antMatchers("/api/auth/**")
 	                        .permitAll()
+	                    .antMatchers(AUTH_WHITELIST)
+	                    	.permitAll()
 	                    .antMatchers("/api/user/checkUsernameAvailability", "/api/user/checkEmailAvailability")
 	                        .permitAll()
-	                    .antMatchers(HttpMethod.GET, "/api/polls/**", "/api/users/**")
+	                    .antMatchers(HttpMethod.GET, "/swagger-ui.html", "/api/users/**")
 	                        .permitAll()
 	                    .anyRequest()
 	                        .authenticated();
