@@ -5,7 +5,10 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.repository.GroupRepository;
 
@@ -40,18 +43,23 @@ public class GroupService {
 		group.setDescription(description);
 		groupRepository.save(group);
 	}
-    
+	
     //get all groups in which a user is a member
 	public List<Group> getGroupsByUser(Long id){
 		return groupRepository.findGroupById(id);
-	}
-	
-    //get all groups in which a user is a admin
+	}	
     
-    //getGroupsByName
+    //edit group cover photo
+	public void editCoverPhoto(Long id){
+		
+	}
 	
     //getGroupById
 	private Optional<Group> getGroupById(Long id) {
 		return groupRepository.findById(id);
+	}
+	
+	public Group getGroup(Long id) {
+		return groupRepository.findById(id).get();
 	}
 }
