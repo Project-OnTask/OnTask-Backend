@@ -50,8 +50,8 @@ public class GroupService {
 	}	
     
     //edit group cover photo
-	public void editCoverPhoto(Long id){
-		
+	public String getCoverURL(Long id){
+		return groupRepository.findById(id).get().getCoverPhoto();
 	}
 	
     //getGroupById
@@ -59,7 +59,7 @@ public class GroupService {
 		return groupRepository.findById(id);
 	}
 	
-	public Group getGroup(Long id) {
-		return groupRepository.findById(id).get();
+	public Optional<Group> getGroup(Long id) {
+		return groupRepository.findById(id);
 	}
 }

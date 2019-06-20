@@ -95,23 +95,37 @@ public class GroupController {
     
     @GetMapping("/exists/group/{groupId}")
     public Group isGroup(@PathVariable Long groupId) {
-    	return groupService.getGroup(groupId);
+    	if(groupService.getGroup(groupId) == null) {
+    		throw new BadRequestException("Bad request");
+    	}
+    	return groupService.getGroup(groupId).get();
     }
     
-    @PostMapping("/group/change-cover")
-    public void changeGroupCoverPhoto(@RequestParam("file") MultipartFile file) {
-    	 String fileName = fileService.storeFile(file);
+    @PostMapping("/group/{groupId}/{userId}/change-cover")
+    public void changeGroupCoverPhoto(@RequestParam("file") MultipartFile file,@PathVariable Long groupId,@PathVariable Long userId) {
+    	if(!groupMemberService.isMemberAnAdmin(userId, groupId)) {
+    		throw new BadRequestException("This operation requires priviledge elevation");
+    	}
+    	String fileName = fileService.storeFile(file);
 
-         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                 .path("/downloadFile/")
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                 .path("/api/downloadFile/")
                  .path(fileName)
                  .toUriString();
 
          UploadFileResponse response =  new UploadFileResponse(fileName, fileDownloadUri,
                 file.getContentType(), file.getSize());
-         Group group = groupService.getGroup((long)2);
+         Group group = groupService.getGroup(groupId).get();
          group.setCoverPhoto(response.getFileDownloadUri());
          groupRepository.save(group);
     }
+    
+    @GetMapping("/{id}/cover")
+    public String getCoverURL(@PathVariable long id) {
+    	return groupService.getCoverURL(id);
+    }
+   
+    
+    
     
 }
