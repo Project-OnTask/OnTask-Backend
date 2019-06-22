@@ -11,16 +11,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.itsfive.back.exception.UserNotFoundException;
+import com.itsfive.back.model.Group;
 import com.itsfive.back.model.HTMLMail;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.PasswordResetRequest;
 import com.itsfive.back.payload.UpdateEmailRequest;
 import com.itsfive.back.payload.UpdatePasswordRequest;
+import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.security.CurrentUser;
 import com.itsfive.back.security.UserPrincipal;
+import com.itsfive.back.service.FileService;
 import com.itsfive.back.service.MailSenderService;
 import com.itsfive.back.service.UserService;
 
@@ -36,8 +42,8 @@ public class UserController {
 	@GetMapping("/auth/user/me")
 	public User getCurrentUser(@CurrentUser UserPrincipal currentUser) {
 			User CurrentUserSummary = new User();
-	    	if(currentUser.getId() ==  null) {
-	    		throw new UserNotFoundException("user");
+	    	if(currentUser == null) {
+	    		throw new UserNotFoundException("Not logged");
 	    	}
 	    	else {
 	    		CurrentUserSummary.setId(currentUser.getId());  
@@ -85,5 +91,25 @@ public class UserController {
 	 @PostMapping("/user/change-pwd")
 	 public void updatePassword(@RequestBody UpdatePasswordRequest updatePwdReq) {
 		userService.updatePassword(updatePwdReq);
+	 }
+	 
+	 @PostMapping("/user/{userId}/change-propic")
+	 public void updateProfilePic(@PathVariable long userId,@RequestParam("file") MultipartFile file) {
+		userService.editProPic(file, userId); 
+	 }
+	 
+	 @GetMapping("/user/{id}/pro-pic")
+	 public String getProPicURL(@PathVariable long id) {
+	    return userService.getProPicURL(id);
+	 }
+	 
+	 @PostMapping("/user/{userId}/change-cover")
+	 public void updateCoverPic(@PathVariable long userId,@RequestParam("file") MultipartFile file) {
+		userService.editCover(file, userId); 
+	 }
+	 
+	 @GetMapping("/user/{id}/cover")
+	 public String getCoverURL(@PathVariable long id) {
+	    return userService.getCoverURL(id);
 	 }
 }

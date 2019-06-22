@@ -11,15 +11,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.itsfive.back.payload.VerifyMobileRequest;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.PasswordResetToken;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.PasswordResetRequest;
 import com.itsfive.back.payload.UpdateEmailRequest;
 import com.itsfive.back.payload.UpdatePasswordRequest;
+import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.repository.PasswordResetTokenRepository;
 import com.itsfive.back.repository.UserRepository;
+import com.twilio.Twilio;
+import com.twilio.rest.preview.accSecurity.service.VerificationCheck;
 
 @Service
 public class UserService {
@@ -33,7 +39,19 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     
     @Autowired
+    public FileService fileService;
+    
+    @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
+    
+	@Value("${ACCOUNT_SID}")
+	private String ACCOUNT_SID;
+	
+	@Value("${AUTH_TOKEN}")
+	private String AUTH_TOKEN;
+	
+	@Value("${VERIFY_SERVICE_SID}")
+	private String SERVICE_SID;
 
 	public Optional<User> getUserById(Long id) {
 		return userRepository.findById(id);
@@ -92,4 +110,55 @@ public class UserService {
  		updatedUser.setPassword(passwordEncoder.encode(updatePwdReq.getNewPassword()));
  		userRepository.save(updatedUser);
 	}
+	
+	 public void verifyMobile(VerifyMobileRequest verifyMobileReq) {
+		 Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+	        VerificationCheck verificationCheck = VerificationCheck.creator(
+	                SERVICE_SID,
+	                verifyMobileReq.getToken())
+	            .setTo(verifyMobileReq.getMobile()).create();
+	        if(!verificationCheck.getValid()) {
+	        	throw new BadRequestException("Validation failed");
+	        }
+	        Optional<User> user = userRepository.findById(verifyMobileReq.getUserId());
+	        User validatedUser = user.get();
+	        validatedUser.setEnabled(true);
+	        userRepository.save(validatedUser);
+	}
+
+	 public void editProPic(MultipartFile file,long userId) {
+		 String fileName = fileService.storeFile(file);
+	        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+	                 .path("/api/downloadFile/")
+	                 .path(fileName)
+	                 .toUriString();
+
+	         UploadFileResponse response =  new UploadFileResponse(fileName, fileDownloadUri,
+	                file.getContentType(), file.getSize());
+	         User user = userRepository.findById(userId).get();
+	         user.setProPicURL(response.getFileDownloadUri());
+	         userRepository.save(user);
+	 }
+	 
+	 public String getProPicURL(Long id){
+			return userRepository.findById(id).get().getProPicURL();
+	 }
+	 
+	 public void editCover(MultipartFile file,long userId) {
+		 String fileName = fileService.storeFile(file);
+	        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+	                 .path("/api/downloadFile/")
+	                 .path(fileName)
+	                 .toUriString();
+
+	         UploadFileResponse response =  new UploadFileResponse(fileName, fileDownloadUri,
+	                file.getContentType(), file.getSize());
+	         User user = userRepository.findById(userId).get();
+	         user.setCoverURL(response.getFileDownloadUri());
+	         userRepository.save(user);
+	 }
+	 
+	 public String getCoverURL(Long id){
+			return userRepository.findById(id).get().getCoverURL();
+	 }
 }

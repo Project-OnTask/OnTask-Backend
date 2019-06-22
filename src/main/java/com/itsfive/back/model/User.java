@@ -50,14 +50,29 @@ public class User extends DateAudit{
     @Column(name = "enabled")
     private boolean enabled;
     
-//    @ManyToMany
-//    @JoinTable(
-//    name = "user_group", 
-//    joinColumns = @JoinColumn(name = "user_id"), 
-//    inverseJoinColumns = @JoinColumn(name = "group_id"))
-//    Set<Group> joinedGroups;
+    @Column(name = "pro_pic")
+    private String proPicURL;
     
-    @OneToMany(mappedBy = "user")
+    @Column(name = "cover")
+    private String coverURL;
+   
+    public String getProPicURL() {
+		return proPicURL;
+	}
+
+	public void setProPicURL(String proPicURL) {
+		this.proPicURL = proPicURL;
+	}
+
+	public String getCoverURL() {
+		return coverURL;
+	}
+
+	public void setCoverURL(String coverURL) {
+		this.coverURL = coverURL;
+	}
+
+	@OneToMany(mappedBy = "user")
     Set<GroupMember> role;
     
     @ManyToMany(fetch = FetchType.LAZY)
@@ -140,7 +155,15 @@ public class User extends DateAudit{
         this.mobile = mobile;
     }
 
-    public Set<Roles> getRoles() {
+    public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Set<Roles> getRoles() {
         return roles;
     }
 
