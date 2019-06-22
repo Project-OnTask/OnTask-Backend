@@ -22,6 +22,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.itsfive.back.model.audit.DateAudit;
 
 @Entity
@@ -41,16 +43,35 @@ public class Group extends DateAudit{
     @ManyToOne
     private User created_by;
     
-    @ManyToMany(mappedBy = "joinedGroups")
-    Set<User> members;
+    public User getCreated_by() {
+		return created_by;
+	}
+
+	public void setCreated_by(User created_by) {
+		this.created_by = created_by;
+	}
+
+	public String getCoverPhoto() {
+		return coverPhoto;
+	}
+
+	public void setCoverPhoto(String coverPhoto) {
+		this.coverPhoto = coverPhoto;
+	}
+
+	private String coverPhoto;
     
-    @OneToMany(mappedBy = "group")
-    Set<GroupMembers> role;
+//    @ManyToMany(mappedBy = "joinedGroups")
+//    Set<User> members;
     
-	public Group(@NotBlank @Size(max = 30) String groupName, @Size(max = 160) String description) {
+//    @OneToMany(mappedBy = "group")
+//    Set<GroupMember> role;
+    
+	public Group(@NotBlank @Size(max = 30) String name, @Size(max = 160) String description,User created_by) {
 		super();
-		this.name = groupName;
+		this.name = name;
 		this.description = description;
+		this.created_by = created_by;
 	}
 	
 	public Group() {
@@ -88,6 +109,4 @@ public class Group extends DateAudit{
 	public void setCreatedBy(User user) {
 		this.created_by = user;
 	}
-
-
 }
