@@ -36,4 +36,8 @@ public class TaskService {
 	public List<Task> getAllTasksOfGroup(Long groupId) {
 		return taskRepository.findAllByGroupId(groupId);
 	}
+	
+	public Task getTaskById(long id) {
+		return taskRepository.findById(id).get();
+	}
 }

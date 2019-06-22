@@ -40,4 +40,8 @@ public class TaskController {
     	return taskService.getAllTasksOfGroup(group);
     }
     
+    @GetMapping("/tasks/{id}")
+    public Task getTaskById(@PathVariable Long id){
+    	return taskService.getTaskById(id);
+    }
 }
