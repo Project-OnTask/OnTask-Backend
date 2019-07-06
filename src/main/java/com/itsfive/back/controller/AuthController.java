@@ -6,10 +6,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.itsfive.back.exception.AppException;
-import com.itsfive.back.exception.UserNotFoundException;
-import com.itsfive.back.model.Roles;
 import com.itsfive.back.model.HTMLMail;
-import com.itsfive.back.model.RoleName;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.ApiResponse;
 import com.itsfive.back.payload.JwtAuthenticationResponse;
@@ -18,13 +15,12 @@ import com.itsfive.back.payload.MobileSignupRequest;
 import com.itsfive.back.payload.SignUpRequest;
 import com.itsfive.back.repository.RoleRepository;
 import com.itsfive.back.repository.UserRepository;
-import com.itsfive.back.security.CurrentUser;
 import com.itsfive.back.security.JwtTokenProvider;
-import com.itsfive.back.security.UserPrincipal;
 import com.itsfive.back.service.MailSenderService;
 import com.itsfive.back.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -56,11 +52,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class AuthController {
 	@Autowired
     AuthenticationManager authenticationManager;
-
+	
+	@Value("${ACCOUNT_SID}")
+	private String ACCOUNT_SID;
+	
+	@Value("${AUTH_TOKEN}")
+	private String AUTH_TOKEN;
+	
+	@Value("${VERIFY_SERVICE_SID}")
+	private String SERVICE_SID;
+	
     @Autowired
     UserRepository userRepository;
     
@@ -82,7 +87,7 @@ public class AuthController {
     @Autowired
     private MailSenderService senderService;
     
-    @PostMapping("/signin")
+    @PostMapping("/auth/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
@@ -99,7 +104,7 @@ public class AuthController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) throws AddressException, MessagingException, IOException {
         if(userRepository.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
@@ -131,10 +136,10 @@ public class AuthController {
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
     }
     
-    @PostMapping("/signup/mobile")
+    @PostMapping("/auth/signup/mobile")
     public ResponseEntity<?> registerMobileUser(@Valid @RequestBody MobileSignupRequest mobileSignupRequest) throws IOException {
         if(userRepository.existsByMobile(mobileSignupRequest.getMobile())) {
-            return new ResponseEntity(new ApiResponse(false, "This mobile is already in use!"),
+            return new ResponseEntity(new ApiResponse(false, "This mobile number is already in use!"),
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -142,7 +147,13 @@ public class AuthController {
         User user = new User(mobileSignupRequest.getFName(), mobileSignupRequest.getMobile());
         
         User result = userRepository.save(user);
-// Sending sms to provided mobile number
+        // Sending sms to provided mobile number
+//        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+//        Verification verification = Verification.creator(
+//                SERVICE_SID,
+//                mobileSignupRequest.getMobile(),
+//                "sms")
+//            .create();
         
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{mobile}")
@@ -151,7 +162,7 @@ public class AuthController {
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
     }
     
-    @RequestMapping("/mobile/signin/{text}")
+    @GetMapping("/auth/mobile/signin/{text}")
     public byte[] getQRCodeImage(@PathVariable String text) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 100, 100);
@@ -161,35 +172,5 @@ public class AuthController {
         byte[] pngData = pngOutputStream.toByteArray(); 
         return pngData;
     }
-
-    @GetMapping("/user/me")
-    public User getCurrentUser(@CurrentUser UserPrincipal currentUser) {
-    	if(currentUser.getId() == null) {
-    		throw new UserNotFoundException("user");
-    	}
-        User userSummary = new User(currentUser.getId(),currentUser.getFName());
-        
-        return userSummary;
-    }
     
-    @PostMapping("/{email}/genToken")
-    public void generateResetToken( @PathVariable String email) throws MessagingException {
-    	Optional<User> user = userService.getUserByEmail(email);
-    	if(!user.isPresent()) {
-    		throw new UserNotFoundException(email);
-    	}
-    	 String token = UUID.randomUUID().toString();
-    	 userService.createResetTokenForUser(user.get(), token);
-    	 
-    	 String content = "<html>" +
-                 "<body>" +
-                 "<p>Hello "+ user.get().getFName()+",</p>" +
-                 "<p>Click <a href=\"http://localhost:3000/reset-password/?token="+token+"\">here</a> to reset your password</p>" +
-             "</body>" +
-         "</html>";
-    	 
-    	 HTMLMail htmlMail = new HTMLMail(user.get().getEmail(),"OnTask - reset password",content);
-    	 
-    	 mailSenderService.sendHTMLMail(htmlMail);
-    }
 }

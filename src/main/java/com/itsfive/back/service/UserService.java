@@ -24,8 +24,6 @@ import com.itsfive.back.payload.UpdatePasswordRequest;
 import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.repository.PasswordResetTokenRepository;
 import com.itsfive.back.repository.UserRepository;
-import com.twilio.Twilio;
-import com.twilio.rest.preview.accSecurity.service.VerificationCheck;
 
 @Service
 public class UserService {
@@ -109,21 +107,6 @@ public class UserService {
 		User updatedUser = user.get();
  		updatedUser.setPassword(passwordEncoder.encode(updatePwdReq.getNewPassword()));
  		userRepository.save(updatedUser);
-	}
-	
-	 public void verifyMobile(VerifyMobileRequest verifyMobileReq) {
-		 Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-	        VerificationCheck verificationCheck = VerificationCheck.creator(
-	                SERVICE_SID,
-	                verifyMobileReq.getToken())
-	            .setTo(verifyMobileReq.getMobile()).create();
-	        if(!verificationCheck.getValid()) {
-	        	throw new BadRequestException("Validation failed");
-	        }
-	        Optional<User> user = userRepository.findById(verifyMobileReq.getUserId());
-	        User validatedUser = user.get();
-	        validatedUser.setEnabled(true);
-	        userRepository.save(validatedUser);
 	}
 
 	 public void editProPic(MultipartFile file,long userId) {
