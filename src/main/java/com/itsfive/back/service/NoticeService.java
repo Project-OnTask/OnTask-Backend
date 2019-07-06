@@ -1,5 +1,8 @@
 package com.itsfive.back.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +27,18 @@ public class NoticeService {
 		Notice note = new Notice();
 		note.setGroup(groupRepository.findById(addNoteReq.getGroupId()).get());
 		note.setCreatedBy(userRepository.findById(addNoteReq.getUserId()).get());
+		note.setTitle(addNoteReq.getTitle());
 		note.setContent(addNoteReq.getContent());
 		noticeRepository.save(note);
+	}
+
+	public List<Notice> getNoticesByGroup(long groupId) {
+		return noticeRepository.findAllByGroupId(groupId).stream()
+				.map(elt -> new Notice(elt.getId(),elt.getTitle()))
+				.collect(Collectors.toList());
+	}
+	
+	public Notice getNoticeById(long id) {
+		return noticeRepository.findById(id).get();
 	}
 }

@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -35,17 +36,27 @@ public class Notice extends DateAudit{
     @JsonIgnore
 	private Group group;
     
+    @Size(max = 100)
+    private String title;
+    
 	@Lob 
     private String content;
 
 	public Notice() {
 		super();
 	}
+	
+	public Notice(long id,String title) {
+		super();
+		this.id = id;
+		this.title = title;
+	}
 
-	public Notice(Long id, User createdBy, String content) {
+	public Notice(Long id, User createdBy, String title,String content) {
 		super();
 		this.id = id;
 		this.createdBy = createdBy;
+		this.title = title;
 		this.content = content;
 	}
 	
@@ -71,6 +82,14 @@ public class Notice extends DateAudit{
 
 	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getContent() {
