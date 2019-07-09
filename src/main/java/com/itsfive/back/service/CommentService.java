@@ -1,10 +1,12 @@
 package com.itsfive.back.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.itsfive.back.payload.GetCommentResponse;
 import com.itsfive.back.payload.PostCommentRequest;
 import com.itsfive.back.repository.CommentRepository;
 import com.itsfive.back.repository.UserRepository;
@@ -25,8 +27,18 @@ public class CommentService {
 	@Autowired
 	private TaskRepository taskRepository;
 	
-	public List<Comment> getCommentsByTask(long taskId) {
-		return commentRepository.findAllByTaskId(taskId);
+	public List<GetCommentResponse> getCommentsByTask(long taskId) {
+		List<GetCommentResponse> fin = new ArrayList<>();
+		List<Comment> cmnts = commentRepository.findAllByTaskId(taskId);
+		for (int i = 0; i < cmnts.size(); i++) {
+			GetCommentResponse obj = new GetCommentResponse(
+					cmnts.get(i).getId(),
+					cmnts.get(i).getCreatedBy().getUsername(),
+					cmnts.get(i).getCreatedAt(),
+					cmnts.get(i).getContent());
+			fin.add(obj);
+		}
+		return fin;
 	}
 	
 	public void postComment(PostCommentRequest postReq) {

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.itsfive.back.model.Comment;
+import com.itsfive.back.payload.GetCommentResponse;
 import com.itsfive.back.payload.PostCommentRequest;
 import com.itsfive.back.service.CommentService;
 
@@ -27,7 +28,7 @@ public class CommentController {
 	}
 	
 	@GetMapping("/comments/{taskId}")
-	public List<Comment> getComments(@PathVariable long taskId) {
+	public List<GetCommentResponse> getComments(@PathVariable long taskId) {
 		return commentService.getCommentsByTask(taskId);
 	}
 }
