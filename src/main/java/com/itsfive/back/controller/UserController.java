@@ -1,5 +1,6 @@
 package com.itsfive.back.controller;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,11 +25,13 @@ import com.itsfive.back.payload.PasswordResetRequest;
 import com.itsfive.back.payload.UpdateEmailRequest;
 import com.itsfive.back.payload.UpdatePasswordRequest;
 import com.itsfive.back.payload.UploadFileResponse;
+import com.itsfive.back.payload.VerifyMobileRequest;
 import com.itsfive.back.security.CurrentUser;
 import com.itsfive.back.security.UserPrincipal;
 import com.itsfive.back.service.FileService;
 import com.itsfive.back.service.MailSenderService;
 import com.itsfive.back.service.UserService;
+import com.nexmo.client.NexmoClientException;
 
 @RestController
 @RequestMapping("/api")
@@ -111,5 +114,10 @@ public class UserController {
 	 @GetMapping("/user/{id}/cover")
 	 public String getCoverURL(@PathVariable long id) {
 	    return userService.getCoverURL(id);
+	 }
+
+	 @PostMapping("/auth/verify/mobile")
+	 public void verifyMobile(@RequestBody VerifyMobileRequest verifyPhoneReq) throws IOException, NexmoClientException {
+		 userService.verifyMobile(verifyPhoneReq);
 	 }
 }

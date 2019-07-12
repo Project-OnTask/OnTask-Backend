@@ -32,7 +32,15 @@ public class User extends DateAudit{
     @Size(max = 30)
     private String lname;
     
-    @Size(max = 40)
+    public String getLname() {
+		return lname;
+	}
+
+	public void setLname(String lname) {
+		this.lname = lname;
+	}
+
+	@Size(max = 40)
     private String username;
 
     @Size(max = 30)
@@ -47,8 +55,15 @@ public class User extends DateAudit{
     @Size(max = 100)
     private String password;
     
-    @Column(name = "enabled")
-    private boolean enabled;
+    @Column(name = "enabled_mail")
+    private boolean enabledMail;
+    
+    @Column(name = "enabled_phone")
+    private boolean enabledPhone;
+    
+    @Size(max = 6)
+    @Column(name = "phone_req_id")
+    private String PhoneReqId;
     
     @Column(name = "pro_pic")
     private String proPicURL;
@@ -81,13 +96,24 @@ public class User extends DateAudit{
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Roles> roles = new HashSet<>();
    
-    public User() {
+    public String getPhoneReqId() {
+		return PhoneReqId;
+	}
+
+	public void setPhoneReqId(String phoneReqId) {
+		PhoneReqId = phoneReqId;
+	}
+
+	public User() {
     	
     }
     
     public User(String fname,String mobile) {
+    	this.enabledPhone = false;
     	this.fname = fname;
     	this.mobile = mobile;
+    	this.username = mobile;
+    	this.password = mobile;
     }
     
     public User(Long id,String fname) {
@@ -96,7 +122,7 @@ public class User extends DateAudit{
     }
 
     public User(String name, String username, String email, String password) {
-    	this.enabled = false;
+    	this.enabledMail = false;
         this.fname = name;
         this.username = username;
         this.email = email;
@@ -155,12 +181,20 @@ public class User extends DateAudit{
         this.mobile = mobile;
     }
 
-    public boolean isEnabled() {
-		return enabled;
+    public boolean isEnabledPhone() {
+		return enabledPhone;
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	public void setEnabledPhone(boolean enabledPhone) {
+		this.enabledPhone = enabledPhone;
+	}
+
+	public boolean isMailEnabled() {
+		return enabledMail;
+	}
+
+	public void setMailEnabled(boolean enabled) {
+		this.enabledMail = enabled;
 	}
 
 	public Set<Roles> getRoles() {

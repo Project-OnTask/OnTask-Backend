@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.itsfive.back.payload.VerifyMobileRequest;
+import com.itsfive.back.exception.AppException;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.PasswordResetToken;
 import com.itsfive.back.model.User;
@@ -24,6 +25,11 @@ import com.itsfive.back.payload.UpdatePasswordRequest;
 import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.repository.PasswordResetTokenRepository;
 import com.itsfive.back.repository.UserRepository;
+import com.nexmo.client.NexmoClient;
+import com.nexmo.client.NexmoClientException;
+import com.nexmo.client.verify.CheckResponse;
+import com.nexmo.client.verify.VerifyClient;
+import com.nexmo.client.verify.VerifyStatus;
 
 @Service
 public class UserService {
@@ -41,15 +47,6 @@ public class UserService {
     
     @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
-    
-	@Value("${ACCOUNT_SID}")
-	private String ACCOUNT_SID;
-	
-	@Value("${AUTH_TOKEN}")
-	private String AUTH_TOKEN;
-	
-	@Value("${VERIFY_SERVICE_SID}")
-	private String SERVICE_SID;
 
 	public Optional<User> getUserById(Long id) {
 		return userRepository.findById(id);
@@ -143,5 +140,23 @@ public class UserService {
 	 
 	 public String getCoverURL(Long id){
 			return userRepository.findById(id).get().getCoverURL();
+	 }
+	 
+	 public void verifyMobile(VerifyMobileRequest verifyPhoneReq) throws IOException, NexmoClientException {
+		 NexmoClient client = NexmoClient.builder()
+				  .apiKey("0ff50012")
+				  .apiSecret("egcSxdEkwH9Vgcdf")
+				  .build();
+		 
+		VerifyClient verifyClient = client.getVerifyClient();
+		
+		CheckResponse response = verifyClient.check(verifyPhoneReq.getRequestId(), verifyPhoneReq.getCode());
+		if (response.getStatus() == VerifyStatus.OK) {
+			 User user = userRepository.findById(verifyPhoneReq.getUserId()).get();
+			 user.setEnabledPhone(true);
+			 userRepository.save(user);
+		} else {
+		    throw new AppException("Verification Failed");
+		}
 	 }
 }
