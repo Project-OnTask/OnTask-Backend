@@ -12,12 +12,19 @@ import com.itsfive.back.payload.ApiResponse;
 import com.itsfive.back.payload.JwtAuthenticationResponse;
 import com.itsfive.back.payload.LoginRequest;
 import com.itsfive.back.payload.MobileSignupRequest;
+import com.itsfive.back.payload.MobileSignupResponse;
 import com.itsfive.back.payload.SignUpRequest;
 import com.itsfive.back.repository.RoleRepository;
 import com.itsfive.back.repository.UserRepository;
 import com.itsfive.back.security.JwtTokenProvider;
 import com.itsfive.back.service.MailSenderService;
 import com.itsfive.back.service.UserService;
+import com.nexmo.client.NexmoClient;
+import com.nexmo.client.NexmoClientException;
+import com.nexmo.client.verify.VerifyClient;
+import com.nexmo.client.verify.VerifyRequest;
+import com.nexmo.client.verify.VerifyResponse;
+import com.nexmo.client.verify.VerifyStatus;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,15 +64,6 @@ public class AuthController {
 	@Autowired
     AuthenticationManager authenticationManager;
 	
-	@Value("${ACCOUNT_SID}")
-	private String ACCOUNT_SID;
-	
-	@Value("${AUTH_TOKEN}")
-	private String AUTH_TOKEN;
-	
-	@Value("${VERIFY_SERVICE_SID}")
-	private String SERVICE_SID;
-	
     @Autowired
     UserRepository userRepository;
     
@@ -84,9 +82,6 @@ public class AuthController {
     @Autowired
     JwtTokenProvider tokenProvider;
 
-    @Autowired
-    private MailSenderService senderService;
-    
     @PostMapping("/auth/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -137,29 +132,40 @@ public class AuthController {
     }
     
     @PostMapping("/auth/signup/mobile")
-    public ResponseEntity<?> registerMobileUser(@Valid @RequestBody MobileSignupRequest mobileSignupRequest) throws IOException {
+    public ResponseEntity<?> registerMobileUser(@Valid @RequestBody MobileSignupRequest mobileSignupRequest) throws IOException, NexmoClientException {
         if(userRepository.existsByMobile(mobileSignupRequest.getMobile())) {
             return new ResponseEntity(new ApiResponse(false, "This mobile number is already in use!"),
                     HttpStatus.BAD_REQUEST);
         }
 
-        // Creating user's account
-        User user = new User(mobileSignupRequest.getFName(), mobileSignupRequest.getMobile());
+        NexmoClient client = NexmoClient.builder()
+        		  .apiKey("0ff50012")
+        		  .apiSecret("egcSxdEkwH9Vgcdf")
+        		  .build();
         
-        User result = userRepository.save(user);
-        // Sending sms to provided mobile number
-//        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-//        Verification verification = Verification.creator(
-//                SERVICE_SID,
-//                mobileSignupRequest.getMobile(),
-//                "sms")
-//            .create();
+        VerifyClient verifyClient = client.getVerifyClient();
         
+        VerifyRequest request = new VerifyRequest(mobileSignupRequest.getMobile(), "Nexmo");
+        request.setLength(6);
+
+        VerifyResponse response = verifyClient.verify(request);
+        
+   	 User user = new User(mobileSignupRequest.getFName(), mobileSignupRequest.getMobile());
+   	 
+        if (response.getStatus() == VerifyStatus.OK) {
+      
+        } 
+        else {
+        	throw new AppException("Error occured with Nexmo");
+        }
+        
+        User result = userRepository.save(user); 
+        		
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{mobile}")
                 .buildAndExpand(result.getMobile()).toUri();
 
-        return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
+        return ResponseEntity.created(location).body(new MobileSignupResponse(result.getId(),response.getRequestId(),true, "User registered successfully"));
     }
     
     @GetMapping("/auth/mobile/signin/{text}")

@@ -9,7 +9,18 @@ public class MobileSignupRequest {
     @NotBlank
     private String mobile;
     
-    public String getFName() {
+    
+    public MobileSignupRequest() {
+		super();
+	}
+
+	public MobileSignupRequest(@NotBlank String fname, @NotBlank String mobile) {
+		super();
+		this.fname = fname;
+		this.mobile = mobile;
+	}
+
+	public String getFName() {
         return fname;
     }
 
