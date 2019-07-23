@@ -49,7 +49,7 @@ public class User extends DateAudit{
 
     @Size(max = 40)
     @Email
-    @Column(name="email")
+    @Column(name="email",unique=true)
     private String email;
 
     @Size(max = 100)
@@ -58,12 +58,11 @@ public class User extends DateAudit{
     @Column(name = "enabled_mail")
     private boolean enabledMail;
     
+    @Column(name = "confirm_mail_token")
+    private String confirmMailToken;
+    
     @Column(name = "enabled_phone")
     private boolean enabledPhone;
-    
-    @Size(max = 6)
-    @Column(name = "phone_req_id")
-    private String PhoneReqId;
     
     @Column(name = "pro_pic")
     private String proPicURL;
@@ -95,14 +94,6 @@ public class User extends DateAudit{
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Roles> roles = new HashSet<>();
-   
-    public String getPhoneReqId() {
-		return PhoneReqId;
-	}
-
-	public void setPhoneReqId(String phoneReqId) {
-		PhoneReqId = phoneReqId;
-	}
 
 	public User() {
     	
@@ -113,7 +104,6 @@ public class User extends DateAudit{
     	this.fname = fname;
     	this.mobile = mobile;
     	this.username = mobile;
-    	this.password = mobile;
     }
     
     public User(Long id,String fname) {
@@ -174,7 +164,7 @@ public class User extends DateAudit{
     }
     
     public String getMobile() {
-        return password;
+        return mobile;
     }
 
     public void setMobile(String mobile) {
@@ -191,6 +181,14 @@ public class User extends DateAudit{
 
 	public boolean isMailEnabled() {
 		return enabledMail;
+	}
+
+	public String getConfirmMailToken() {
+		return confirmMailToken;
+	}
+
+	public void setConfirmMailToken(String confirmMailToken) {
+		this.confirmMailToken = confirmMailToken;
 	}
 
 	public void setMailEnabled(boolean enabled) {

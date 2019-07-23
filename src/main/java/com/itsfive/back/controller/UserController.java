@@ -1,8 +1,10 @@
 package com.itsfive.back.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import javax.mail.MessagingException;
 
@@ -17,15 +19,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.exception.UserNotFoundException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.HTMLMail;
 import com.itsfive.back.model.User;
+import com.itsfive.back.payload.GetUserResponse;
 import com.itsfive.back.payload.PasswordResetRequest;
 import com.itsfive.back.payload.UpdateEmailRequest;
 import com.itsfive.back.payload.UpdatePasswordRequest;
 import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.payload.VerifyMobileRequest;
+import com.itsfive.back.repository.UserRepository;
 import com.itsfive.back.security.CurrentUser;
 import com.itsfive.back.security.UserPrincipal;
 import com.itsfive.back.service.FileService;
@@ -38,6 +43,9 @@ import com.nexmo.client.NexmoClientException;
 public class UserController {
     @Autowired
     public UserService userService;
+    
+    @Autowired
+    private UserRepository userRepository;
     
     @Autowired
     private MailSenderService senderService;
@@ -106,18 +114,36 @@ public class UserController {
 	    return userService.getProPicURL(id);
 	 }
 	 
-	 @PostMapping("/user/{userId}/change-cover")
-	 public void updateCoverPic(@PathVariable long userId,@RequestParam("file") MultipartFile file) {
-		userService.editCover(file, userId); 
-	 }
-	 
-	 @GetMapping("/user/{id}/cover")
-	 public String getCoverURL(@PathVariable long id) {
-	    return userService.getCoverURL(id);
-	 }
-
 	 @PostMapping("/auth/verify/mobile")
 	 public void verifyMobile(@RequestBody VerifyMobileRequest verifyPhoneReq) throws IOException, NexmoClientException {
 		 userService.verifyMobile(verifyPhoneReq);
+	 }
+	 
+	 @PostMapping("/auth/verify/email/{token}")
+	 public void verifyEmail(@PathVariable String token) {
+		 Optional<User> user = userRepository.findByConfirmMailToken(token);
+		 if(!user.isPresent()) {
+				throw new BadRequestException("Invalid request");
+		 }
+		 User usr = user.get();
+		 usr.setMailEnabled(true);
+		 usr.setConfirmMailToken("");
+		 userRepository.save(usr);
+	 }
+	 
+	 @PostMapping("/user/search/{query}")
+	 public Stream<Object> searchUser(@PathVariable String query){
+		 List<User> matches = userRepository.findByEmailContaining(query);
+		 return matches.stream().map(user -> new GetUserResponse(
+				 user.getId(),
+				 user.getFName(),
+				 user.getLname(),
+				 user.getEmail(),
+				 user.getProPicURL()));
+	 }
+	 
+	 @GetMapping("/user/{userId}")
+	 public User getUser(@PathVariable long userId) {
+		 return userRepository.findById(userId).get();
 	 }
 }

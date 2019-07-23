@@ -81,6 +81,9 @@ public class AuthController {
 
     @Autowired
     JwtTokenProvider tokenProvider;
+    
+    @Autowired
+    private MailSenderService senderService;
 
     @PostMapping("/auth/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -95,6 +98,23 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = tokenProvider.generateToken(authentication);
+
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+    }
+    
+    @PostMapping("/auth/signin/mobile")
+    public ResponseEntity<?> authenticateMobileUser(@Valid @RequestBody LoginRequest loginRequest) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getEmail(),
+                        loginRequest.getPassword()
+                )
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = tokenProvider.generateTokenForMobile(authentication);
 
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
@@ -116,13 +136,21 @@ public class AuthController {
                 signUpRequest.getEmail(), signUpRequest.getPassword());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        /*Roles userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                .orElseThrow(() -> new AppException("User Role not set."));
-
-        user.setRoles(Collections.singleton(userRole)); */
         
+        String token = UUID.randomUUID().toString();
+        user.setConfirmMailToken(token);
         User result = userRepository.save(user);
+     
+   	 String content = "<html>" +
+                "<body>" +
+                "<p>Hello "+ user.getFName()+",</p>" +
+                "<p>Click <a href=\"http://localhost:3000/login/?token="+token+"\">here</a> to confirm your email.</p>" +
+            "</body>" +
+        "</html>";
+   	 
+   	 HTMLMail htmlMail = new HTMLMail(user.getEmail(),"OnTask - Confirm email",content);
+   	 
+   	 senderService.sendHTMLMail(htmlMail);
         
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
@@ -158,13 +186,13 @@ public class AuthController {
         else {
         	throw new AppException("Error occured with Nexmo");
         }
-        
+   	 	user.setPassword(passwordEncoder.encode(mobileSignupRequest.getMobile()));
         User result = userRepository.save(user); 
         		
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{mobile}")
                 .buildAndExpand(result.getMobile()).toUri();
-
+        //return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
         return ResponseEntity.created(location).body(new MobileSignupResponse(result.getId(),response.getRequestId(),true, "User registered successfully"));
     }
     
