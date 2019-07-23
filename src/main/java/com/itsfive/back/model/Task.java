@@ -35,7 +35,6 @@ public class Task extends DateAudit{
     @Size(max = 30)
     private String name;
     
-    //@Size(max = 160)
     @Lob 
     private String description;
     

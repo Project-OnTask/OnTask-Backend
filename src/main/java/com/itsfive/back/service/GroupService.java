@@ -11,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.repository.GroupRepository;
+import com.itsfive.back.repository.UserRepository;
 
 @Service
 public class GroupService {

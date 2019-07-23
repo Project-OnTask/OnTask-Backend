@@ -7,9 +7,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.itsfive.back.exception.FileStorageException;
 import com.itsfive.back.exception.MyFileNotFoundException;
+import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.property.FileStorageProperties;
 
 import java.io.IOException;
@@ -22,7 +24,7 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class FileService {
 	private final Path fileStorageLocation;
-
+	
     @Autowired
     public FileService(FileStorageProperties fileStorageProperties) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
@@ -68,4 +70,5 @@ public class FileService {
             throw new MyFileNotFoundException("File not found " + fileName, ex);
         }
     }
+
 }
