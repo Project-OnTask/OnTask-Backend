@@ -32,6 +32,17 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
+    
+    public String generateTokenForMobile(Authentication authentication) {
+
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+        return Jwts.builder()
+                .setSubject(Long.toString(userPrincipal.getId()))
+                .setIssuedAt(new Date())
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
+    }
 
     public Long getUserIdFromJWT(String token) {
         Claims claims = Jwts.parser()

@@ -9,6 +9,11 @@ import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,12 +24,14 @@ import com.itsfive.back.exception.AppException;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.PasswordResetToken;
 import com.itsfive.back.model.User;
+import com.itsfive.back.payload.JwtAuthenticationResponse;
 import com.itsfive.back.payload.PasswordResetRequest;
 import com.itsfive.back.payload.UpdateEmailRequest;
 import com.itsfive.back.payload.UpdatePasswordRequest;
 import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.repository.PasswordResetTokenRepository;
 import com.itsfive.back.repository.UserRepository;
+import com.itsfive.back.security.JwtTokenProvider;
 import com.nexmo.client.NexmoClient;
 import com.nexmo.client.NexmoClientException;
 import com.nexmo.client.verify.CheckResponse;
@@ -36,8 +43,14 @@ public class UserService {
     @Autowired
     private Environment env;
     
+	@Autowired
+    AuthenticationManager authenticationManager;
+    
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    JwtTokenProvider tokenProvider;
     
     @Autowired
     PasswordEncoder passwordEncoder;
