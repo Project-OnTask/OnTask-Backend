@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.itsfive.back.model.Notice;
 import com.itsfive.back.payload.AddNoticeRequest;
+import com.itsfive.back.payload.GetNoticesResponse;
 import com.itsfive.back.repository.GroupRepository;
 import com.itsfive.back.repository.NoticeRepository;
 import com.itsfive.back.repository.UserRepository;
@@ -32,9 +33,9 @@ public class NoticeService {
 		noticeRepository.save(note);
 	}
 
-	public List<Notice> getNoticesByGroup(long groupId) {
+	public List<GetNoticesResponse> getNoticesByGroup(long groupId) {
 		return noticeRepository.findAllByGroupId(groupId).stream()
-				.map(elt -> new Notice(elt.getId(),elt.getTitle()))
+				.map(elt -> new GetNoticesResponse(elt.getId(),elt.getTitle(),elt.getCreatedAt()))
 				.collect(Collectors.toList());
 	}
 	

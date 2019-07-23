@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.itsfive.back.model.Notice;
 import com.itsfive.back.payload.AddNoticeRequest;
+import com.itsfive.back.payload.GetNoticesResponse;
 import com.itsfive.back.service.NoticeService;
 
 @RestController
@@ -26,7 +27,7 @@ public class NoticeController {
 	}
 	
 	@GetMapping("/notices/group/{groupId}")
-	public List<Notice> getNoticesByGroup(@PathVariable long groupId) {
+	public List<GetNoticesResponse> getNoticesByGroup(@PathVariable long groupId) {
 		return noticeService.getNoticesByGroup(groupId);
 	}
 	

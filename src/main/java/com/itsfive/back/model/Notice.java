@@ -1,5 +1,7 @@
 package com.itsfive.back.model;
 
+import java.time.Instant;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -44,12 +46,6 @@ public class Notice extends DateAudit{
 
 	public Notice() {
 		super();
-	}
-	
-	public Notice(long id,String title) {
-		super();
-		this.id = id;
-		this.title = title;
 	}
 
 	public Notice(Long id, User createdBy, String title,String content) {
