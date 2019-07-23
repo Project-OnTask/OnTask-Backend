@@ -34,6 +34,7 @@ import com.itsfive.back.repository.GroupRepository;
 import com.itsfive.back.service.FileService;
 import com.itsfive.back.service.GroupMemberService;
 import com.itsfive.back.service.GroupService;
+import com.itsfive.back.service.MailSenderService;
 import com.itsfive.back.service.UserService;
 
 @RestController
@@ -54,6 +55,9 @@ public class GroupController {
 	@Autowired
 	private FileService fileService;
 	
+    @Autowired
+    private MailSenderService senderService;
+	
 	//create group
     @PostMapping("/groups")
     public void createGroup(@RequestBody CreateGroupRequest createGroupRequest) {
@@ -66,12 +70,12 @@ public class GroupController {
     	GroupMembersKey AdminKey = new GroupMembersKey(createdBy.get().getId(),groupId);
     	GroupMember Admin = new GroupMember(AdminKey);
     	Admin.setRole("admin");
-    	groupMemberService.addMember(Admin);
+    	groupMemberService.addAdmin(Admin);
         if(createGroupRequest.getMembers() != null) {
         	for(int i=0;i<createGroupRequest.getMembers().length;i++) {
             	GroupMembersKey key = new GroupMembersKey(createGroupRequest.getMembers()[i],group.getId());
             	GroupMember member = new GroupMember(key);
-            	groupMemberService.addMember(member);
+            	groupMemberService.addAdmin(member);
             }
         }	
     }
@@ -120,12 +124,8 @@ public class GroupController {
          groupRepository.save(group);
     }
     
-    @GetMapping("/{id}/cover")
-    public String getCoverURL(@PathVariable long id) {
-    	return groupService.getCoverURL(id);
+    @GetMapping("/groups/{groupId}")
+    public Group getGroup(@PathVariable long groupId) {
+    	return groupRepository.findById(groupId).get();
     }
-   
-    
-    
-    
 }
