@@ -18,9 +18,13 @@ public class GroupService {
 	@Autowired
 	private GroupRepository groupRepository;
 	
+	@Autowired
+	private GroupActivityService groupActivityService;
+	
 	//create group
 	public Group createGroup(Group group) {
 		Group t = groupRepository.save(group);
+		//groupActivityService.addGroupActivity(t.getId(),"Group " + t.getName() + "created");
 		return t;
 	}
 	
@@ -29,20 +33,12 @@ public class GroupService {
 		groupRepository.deleteById(id);
 	}
 	
-    //edit group name
-	public void editGroupName(Long id,String name) {
-		Group group = new Group();
-		group.setId(id);
-		group.setName(name);
-		groupRepository.save(group);
-	}
-	
     //edit group description
-	private void editGroupDescription(Long id,String description) {
-		Group group = new Group();
-		group.setId(id);
+	public void editGroupDescription(Long id,String description) { 
+		Group group = groupRepository.findById(id).get();
 		group.setDescription(description);
 		groupRepository.save(group);
+		//groupActivityService.addGroupActivity(group.getId(), "Group description was edited");
 	}
 	
     //get all groups in which a user is a member

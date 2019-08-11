@@ -72,10 +72,11 @@ public class GroupController {
     	Admin.setRole("admin");
     	groupMemberService.addAdmin(Admin);
         if(createGroupRequest.getMembers() != null) {
-        	for(int i=0;i<createGroupRequest.getMembers().length;i++) {
+        	for(int i=0;i<createGroupRequest.getMembers().length;i++) { 
             	GroupMembersKey key = new GroupMembersKey(createGroupRequest.getMembers()[i],group.getId());
             	GroupMember member = new GroupMember(key);
-            	groupMemberService.addAdmin(member);
+            	member.setRole("member");
+            	groupMemberService.addMemberAtGroupInit(member);
             }
         }	
     }
@@ -122,6 +123,11 @@ public class GroupController {
          Group group = groupService.getGroup(groupId).get();
          group.setCoverPhoto(response.getFileDownloadUri());
          groupRepository.save(group);
+    }
+    
+    @PostMapping("/groups/{groupId}/edit-desc")
+    public void editGroupDescription(@PathVariable long groupId,@RequestParam("desc") String description) {	
+    	groupService.editGroupDescription(groupId,description);
     }
     
     @GetMapping("/groups/{groupId}")
