@@ -166,34 +166,35 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
 
-        NexmoClient client = NexmoClient.builder()
-        		  .apiKey("0ff50012")
-        		  .apiSecret("egcSxdEkwH9Vgcdf")
-        		  .build();
-        
-        VerifyClient verifyClient = client.getVerifyClient();
-        
-        VerifyRequest request = new VerifyRequest(mobileSignupRequest.getMobile(), "Nexmo");
-        request.setLength(6);
-
-        VerifyResponse response = verifyClient.verify(request);
+//        NexmoClient client = NexmoClient.builder()
+//        		  .apiKey("0ff50012")
+//        		  .apiSecret("egcSxdEkwH9Vgcdf")
+//        		  .build();
+//        
+//        VerifyClient verifyClient = client.getVerifyClient();
+//        
+//        VerifyRequest request = new VerifyRequest(mobileSignupRequest.getMobile(), "Nexmo");
+//        request.setLength(6);
+//
+//        VerifyResponse response = verifyClient.verify(request);
         
    	 User user = new User(mobileSignupRequest.getFName(), mobileSignupRequest.getMobile());
    	 
-        if (response.getStatus() == VerifyStatus.OK) {
-      
-        } 
-        else {
-        	throw new AppException("Error occured with Nexmo");
-        }
+//        if (response.getStatus() == VerifyStatus.OK) {
+//      
+//        } 
+//        else {
+//        	throw new AppException("Error occured with Nexmo");
+//        }
    	 	user.setPassword(passwordEncoder.encode(mobileSignupRequest.getMobile()));
-        User result = userRepository.save(user); 
+   	 	user.setEmail(mobileSignupRequest.getMobile());
+        User result = userRepository.save(user);  
         		
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{mobile}")
                 .buildAndExpand(result.getMobile()).toUri();
-        //return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
-        return ResponseEntity.created(location).body(new MobileSignupResponse(result.getId(),response.getRequestId(),true, "User registered successfully"));
+        return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
+        //return ResponseEntity.created(location).body(new MobileSignupResponse(result.getId(),response.getRequestId(),true, "User registered successfully"));
     }
     
     @GetMapping("/auth/mobile/signin/{text}")
