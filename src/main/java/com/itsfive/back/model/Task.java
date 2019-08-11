@@ -52,6 +52,8 @@ public class Task extends DateAudit{
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private User createdBy;
+    
+    private String status;
 
 	public User getCreatedBy() {
 		return createdBy;
@@ -75,6 +77,7 @@ public class Task extends DateAudit{
 
 	public Task(@NotBlank @Size(max = 30) String name, @Size(max = 160) String description, Date dueDate) {
 		super();
+		this.status = "new";
 		this.name = name;
 		this.description = description;
 		this.dueDate = dueDate;
@@ -110,6 +113,14 @@ public class Task extends DateAudit{
 
 	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 
