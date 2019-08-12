@@ -40,4 +40,10 @@ public class TaskService {
 	public Task getTaskById(long id) {
 		return taskRepository.findById(id).get();
 	}
+	
+	public void editTaskDescription(long taskId,String description) {
+		Task task = taskRepository.findById(taskId).get();
+		task.setDescription(description);
+		taskRepository.save(task);
+	}
 }
