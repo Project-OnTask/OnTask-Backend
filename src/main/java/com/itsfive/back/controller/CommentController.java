@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.model.Comment;
 import com.itsfive.back.payload.GetCommentResponse;
 import com.itsfive.back.payload.PostCommentRequest;
@@ -23,7 +24,7 @@ public class CommentController {
 	private CommentService commentService;
 	
 	@PostMapping("/comments")
-	public void addComment(@RequestBody PostCommentRequest postReq) {
+	public void addComment(@RequestBody PostCommentRequest postReq) throws JsonProcessingException {
 		commentService.postComment(postReq);
 	}
 	
