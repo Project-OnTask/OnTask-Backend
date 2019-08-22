@@ -9,13 +9,24 @@ public class GetNoticesResponse {
 	
 	private String title;
 	
+	private String createdBy;
+	
 	private Instant date;
 
-	public GetNoticesResponse(long id, String title, Instant instant) {
+	public GetNoticesResponse(long id, String title, Instant instant,String createdBy) {
 		super();
 		this.id = id;
 		this.title = title;
 		this.date = instant;
+		this.createdBy = createdBy;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
 	}
 
 	public long getId() {

@@ -1,6 +1,7 @@
 package com.itsfive.back.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,17 +20,24 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.exception.UserNotFoundException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.HTMLMail;
+import com.itsfive.back.model.Task;
+import com.itsfive.back.model.TaskAsignee;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.GetUserResponse;
 import com.itsfive.back.payload.PasswordResetRequest;
+import com.itsfive.back.payload.TaskAsigneeResponse;
 import com.itsfive.back.payload.UpdateEmailRequest;
 import com.itsfive.back.payload.UpdatePasswordRequest;
 import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.payload.VerifyMobileRequest;
+import com.itsfive.back.repository.TaskAsigneeRepository;
+import com.itsfive.back.repository.TaskRepository;
 import com.itsfive.back.repository.UserRepository;
 import com.itsfive.back.security.CurrentUser;
 import com.itsfive.back.security.UserPrincipal;
@@ -46,6 +54,12 @@ public class UserController {
     
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private TaskAsigneeRepository taskAsRepository;
+    
+    @Autowired
+    private TaskRepository taskRepository;
     
     @Autowired
     private MailSenderService senderService;
@@ -131,9 +145,11 @@ public class UserController {
 		 userRepository.save(usr);
 	 }
 	 
-	 @PostMapping("/user/search/{query}")
-	 public Stream<Object> searchUser(@PathVariable String query){
+	 @GetMapping("/user/search/{query}")
+	 public Stream<Object> searchUsers(@PathVariable String query){
 		 List<User> matches = userRepository.findByEmailContaining(query);
+		 List<User> m_matches = userRepository.findByMobileContaining(query);
+		 matches.addAll(m_matches);
 		 return matches.stream().map(user -> new GetUserResponse(
 				 user.getId(),
 				 user.getFName(),
@@ -142,8 +158,27 @@ public class UserController {
 				 user.getProPicURL()));
 	 }
 	 
-	 @GetMapping("/user/{userId}")
+	 @GetMapping("/users/{userId}")
 	 public User getUser(@PathVariable long userId) {
 		 return userRepository.findById(userId).get();
 	 }
+	 
+	 @GetMapping("/user/{userId}/tasks")
+	    public List<Task> getAsignedTasks(@PathVariable Long userId) throws JsonProcessingException{ 
+	    	List<TaskAsignee> asTasks = taskAsRepository.findAllByIdUserId(userId);
+	    	List<Task> ids = new ArrayList<Task>();
+	    	for(int i=0;i<asTasks.size();i++){  
+	            Long tid = asTasks.get(i).getId().getTaskId();
+	            Task task = taskRepository.findById(tid).get();
+	            ids.add(task);
+	        }  
+	    	return ids;
+//	    	return asTasks.stream().map(
+//					asignee -> {
+//						return taskRepository.findById(asignee.getId().getTaskId()).get();
+//						
+//						//return new TaskAsigneeResponse(user.getFName(),user.getProPicURL(),user.getLname(),user.getId());
+//					}
+//			);
+	    }
 }

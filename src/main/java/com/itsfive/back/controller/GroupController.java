@@ -22,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.exception.UserNotFoundException;
 import com.itsfive.back.model.Group;
+import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.GroupMember;
 import com.itsfive.back.model.GroupMembersKey;
 import com.itsfive.back.model.User;
@@ -29,9 +30,11 @@ import com.itsfive.back.payload.CreateGroupRequest;
 import com.itsfive.back.payload.GetAllGroupsResponse;
 import com.itsfive.back.payload.LoginRequest;
 import com.itsfive.back.payload.UploadFileResponse;
+import com.itsfive.back.repository.GroupActivityRepository;
 import com.itsfive.back.repository.GroupMemberRepository;
 import com.itsfive.back.repository.GroupRepository;
 import com.itsfive.back.service.FileService;
+import com.itsfive.back.service.GroupActivityService;
 import com.itsfive.back.service.GroupMemberService;
 import com.itsfive.back.service.GroupService;
 import com.itsfive.back.service.MailSenderService;
@@ -50,6 +53,12 @@ public class GroupController {
 	private UserService userService;
 	
 	@Autowired
+	private GroupActivityService groupActivityService;
+	
+	@Autowired
+	private GroupActivityRepository groupActivityRepository;
+	
+	@Autowired
 	private GroupMemberService groupMemberService;
 	
 	@Autowired
@@ -66,9 +75,9 @@ public class GroupController {
     		throw new BadRequestException("There is no user for provided id");
     	}
     	Group group = new Group(createGroupRequest.getName(),createGroupRequest.getDescription(),createdBy.get());
-        Long groupId = groupService.createGroup(group).getId();    	
+        Long groupId = groupService.createGroup(group,createdBy.get()).getId();   
     	GroupMembersKey AdminKey = new GroupMembersKey(createdBy.get().getId(),groupId);
-    	GroupMember Admin = new GroupMember(AdminKey);
+    	GroupMember Admin = new GroupMember(AdminKey); 	
     	Admin.setRole("admin");
     	groupMemberService.addAdmin(Admin);
         if(createGroupRequest.getMembers() != null) {
@@ -126,12 +135,23 @@ public class GroupController {
     }
     
     @PostMapping("/groups/{groupId}/edit-desc")
-    public void editGroupDescription(@PathVariable long groupId,@RequestParam("desc") String description) {	
-    	groupService.editGroupDescription(groupId,description);
+    public void editGroupDescription(@PathVariable long groupId,@RequestParam("editedBy") Long editedBy,@RequestParam("desc") String description) {	
+    	groupService.editGroupDescription(groupId,editedBy,description);
     }
     
     @GetMapping("/groups/{groupId}")
     public Group getGroup(@PathVariable long groupId) {
     	return groupRepository.findById(groupId).get();
     }
+    
+    @GetMapping("/groups/{groupId}/activity")
+    public List<GroupActivity> getGroupActivity(@PathVariable long groupId) { 
+    	return groupActivityRepository.findByGroupId(groupId);
+    }
+    
+    @GetMapping("/groups/{groupId}/itoken")
+    public List<GroupActivity> getGroupInvitationToken(@PathVariable long groupId) { 
+    	return groupActivityRepository.findByGroupId(groupId);
+    }
+    
 }

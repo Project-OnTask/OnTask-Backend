@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.itsfive.back.model.audit.DateAudit;
 
 @Entity
-@Table(name = "recent_group_activity")
+@Table(name = "group_activity")
 public class GroupActivity extends DateAudit{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,16 +25,16 @@ public class GroupActivity extends DateAudit{
 	private String description;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    //@OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
-	private User user;
-	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "group_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
 	private Group group;
+	
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+	private User user;
 	
 	public GroupActivity() {
 		super();

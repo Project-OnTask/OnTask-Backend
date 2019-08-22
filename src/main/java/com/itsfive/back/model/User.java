@@ -48,7 +48,7 @@ public class User extends DateAudit{
     private String mobile;
 
     @Size(max = 40)
-    @Email
+    //@Email
     @Column(name="email",unique=true)
     private String email;
 
@@ -69,8 +69,30 @@ public class User extends DateAudit{
     
     @Column(name = "cover")
     private String coverURL;
+    
+    @Column(name = "github_url")
+    private String githubURL;
+    
+    @Column(name = "web_url")
+    private String webURL;
    
-    public String getProPicURL() {
+	public String getGithubURL() {
+		return githubURL;
+	}
+
+	public void setGithubURL(String githubURL) {
+		this.githubURL = githubURL;
+	}
+
+	public String getWebURL() {
+		return webURL;
+	}
+
+	public void setWebURL(String webURL) {
+		this.webURL = webURL;
+	}
+
+	public String getProPicURL() {
 		return proPicURL;
 	}
 

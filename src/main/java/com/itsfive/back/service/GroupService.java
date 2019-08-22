@@ -10,6 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.Group;
+import com.itsfive.back.model.User;
 import com.itsfive.back.repository.GroupRepository;
 import com.itsfive.back.repository.UserRepository;
 
@@ -19,12 +20,15 @@ public class GroupService {
 	private GroupRepository groupRepository;
 	
 	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
 	private GroupActivityService groupActivityService;
 	
 	//create group
-	public Group createGroup(Group group) {
+	public Group createGroup(Group group,User createdBy) {
 		Group t = groupRepository.save(group);
-		//groupActivityService.addGroupActivity(t.getId(),"Group " + t.getName() + "created");
+		groupActivityService.addGroupActivity(t.getId(),createdBy,createdBy.getFName() + " created group " + t.getName()  );
 		return t;
 	}
 	
@@ -34,11 +38,12 @@ public class GroupService {
 	}
 	
     //edit group description
-	public void editGroupDescription(Long id,String description) { 
+	public void editGroupDescription(Long id,Long editedBy,String description) { 
 		Group group = groupRepository.findById(id).get();
+		User user = userRepository.findById(editedBy).get();
 		group.setDescription(description);
 		groupRepository.save(group);
-		//groupActivityService.addGroupActivity(group.getId(), "Group description was edited");
+		groupActivityService.addGroupActivity(group.getId(),user,user.getFName() + " edited group description");
 	}
 	
     //get all groups in which a user is a member

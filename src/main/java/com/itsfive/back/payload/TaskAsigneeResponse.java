@@ -5,13 +5,24 @@ public class TaskAsigneeResponse {
 	
 	private String lname;
 	
+	private String propic;
+	
 	private long userId;
 
-	public TaskAsigneeResponse(String fname, String lname, long userId) {
+	public TaskAsigneeResponse(String fname, String propic,String lname, long userId) {
 		super();
 		this.fname = fname;
 		this.lname = lname;
+		this.propic = propic;
 		this.userId = userId;
+	}
+
+	public String getPropic() {
+		return propic;
+	}
+
+	public void setPropic(String propic) {
+		this.propic = propic;
 	}
 
 	public String getFname() {

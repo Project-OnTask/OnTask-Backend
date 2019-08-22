@@ -6,16 +6,22 @@ import java.util.stream.Stream;
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.itsfive.back.model.GroupInvite;
 import com.itsfive.back.model.GroupMember;
 import com.itsfive.back.model.GroupMembersKey;
+import com.itsfive.back.model.User;
 import com.itsfive.back.payload.GetGroupAdminResponse;
+import com.itsfive.back.payload.GetGroupMembersResponse;
+import com.itsfive.back.payload.GetUserResponse;
 import com.itsfive.back.repository.GroupMemberRepository;
 import com.itsfive.back.service.GroupMemberService;
 
@@ -29,8 +35,8 @@ public class GroupMemberController {
 	private GroupMemberRepository groupMemberRepository;
 	
     @PostMapping("/member/{itoken}")
-	public void createMember(@PathVariable String itoken ) {
-    	groupMemberService.addMember(itoken);
+	public GroupMember createMember(@PathVariable String itoken,@RequestParam("user_id") long userId ) {
+    	return groupMemberService.addMember(itoken,userId);
 	}
     
     @PostMapping("/member/admin")
@@ -63,8 +69,13 @@ public class GroupMemberController {
     	}
 	}
     
-    @PostMapping("/member/{email}/join/{groupId}")
-    public void sendJoinInvitationMail(@PathVariable String email,@PathVariable Long groupId) throws MessagingException {
-    	groupMemberService.sendJoinInvitationMail(groupId,email);
+    @PostMapping("/member/{groupId}/join")
+    public GroupInvite sendJoinInvitationMail(@RequestParam("created_by") long createdBy,@PathVariable Long groupId) throws MessagingException {
+    	return groupMemberService.createInviteLink(createdBy,groupId);
     }
+    
+    @GetMapping("/member/{groupId}/search/{query}")
+	 public Stream<Object> searchGroupMembers(@PathVariable long groupId,@PathVariable String query){
+		return groupMemberService.searchGroupMembers(groupId, query);
+	 }
 }

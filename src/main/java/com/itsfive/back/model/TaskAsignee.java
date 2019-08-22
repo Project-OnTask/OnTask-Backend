@@ -28,6 +28,7 @@ public class TaskAsignee extends DateAudit{
     @JsonIgnore
 	private User addedBy;
 
+    
 	public User getAddedBy() {
 		return addedBy;
 	}
@@ -39,7 +40,7 @@ public class TaskAsignee extends DateAudit{
 	public TaskAsignee() {
 		super();
 	}
-
+	
 	public TaskAsignee(TaskAsigneeKey id) {
 		super();
 		this.id = id;

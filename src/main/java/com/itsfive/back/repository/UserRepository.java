@@ -26,5 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long>{
     
     List<User> findByEmailContaining(String query);
     
+    List<User> findByMobileContaining(String query);
+    
     Optional<User> findByConfirmMailToken(String token);
 }

@@ -6,16 +6,16 @@ public class GetCommentResponse {
 
     private Long id;
 	
-	private String username;
+	private String fname;
 	
 	private Instant createdAt;
 	
     private String content;
 
-	public GetCommentResponse(Long id, String username, Instant createdAt, String content) {
+	public GetCommentResponse(Long id, String fname, Instant createdAt, String content) {
 		super();
 		this.id = id;
-		this.username = username;
+		this.fname = fname;
 		this.createdAt = createdAt;
 		this.content = content;
 	}
@@ -28,12 +28,12 @@ public class GetCommentResponse {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getFName() {
+		return fname;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setFName(String fname) {
+		this.fname = fname;
 	}
 
 	public Instant getCreatedAt() {

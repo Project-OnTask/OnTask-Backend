@@ -15,9 +15,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import static com.google.common.base.Predicates.or;
 import static springfox.documentation.builders.PathSelectors.regex;
 
-/**
- * Created by viroj on 12/3/2018.
- */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {

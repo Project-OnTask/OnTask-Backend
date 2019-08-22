@@ -3,14 +3,14 @@ package com.itsfive.back.payload;
 public class AddTaskAsigneeRequest {
 	private long taskId;
 	
-	private String username;
+	private long userId;
 	
 	private long addedById;
 
-	public AddTaskAsigneeRequest(long taskId, String username, long addedById) {
+	public AddTaskAsigneeRequest(long taskId, long userId, long addedById) {
 		super();
 		this.taskId = taskId;
-		this.username = username;
+		this.userId = userId;
 		this.addedById = addedById;
 	}
 
@@ -22,12 +22,12 @@ public class AddTaskAsigneeRequest {
 		this.taskId = taskId;
 	}
 
-	public String getUsername() {
-		return username;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public long getAddedById() {

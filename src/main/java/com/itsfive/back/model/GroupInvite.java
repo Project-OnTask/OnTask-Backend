@@ -13,35 +13,36 @@ import com.itsfive.back.model.audit.DateAudit;
 @Table(name="group_invite")
 public class GroupInvite extends DateAudit{
 	 @EmbeddedId
-	 GroupMembersKey id;
+	 GroupInviteKey id;
 	
-	 @ManyToOne
-	 @MapsId("user_id")
-	 @JoinColumn(name = "user_id")
-	 User user;
+	 //@ManyToOne
+	 //@MapsId("created_by")
+	 //@JoinColumn(name = "created_by")
+	    @ManyToOne
+	private User createdBy;
 	 
-	 public GroupInvite(GroupMembersKey id){
+		@ManyToOne
+		 @MapsId("group_id")
+		 @JoinColumn(name = "group_id")
+		 private Group group;
+		 
+
+	 public GroupInvite(GroupInviteKey id,User createdBy){
 		 this.id = id;
+		 this.createdBy = createdBy;
+		 
 	 }
 	 
 	 public GroupInvite() {
 		 
 	 }
 	 
-	 public GroupMembersKey getId() {
+	 public GroupInviteKey getId() {
 		return id;
 	}
 
-	public void setId(GroupMembersKey id) {
+	public void setId(GroupInviteKey id) {
 		this.id = id;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 
 	public Group getGroup() {
@@ -52,19 +53,13 @@ public class GroupInvite extends DateAudit{
 		this.group = group;
 	}
 
-	public String getIToken() {
-		return itoken;
+	public User getCreatedBy() {
+		return createdBy;
 	}
 
-	public void setIToken(String iToken) {
-		itoken = iToken;
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
 	}
-
-	@ManyToOne
-	 @MapsId("group_id")
-	 @JoinColumn(name = "group_id")
-	 Group group;
-	 
-	 String itoken;
-
+	
+	
 }
