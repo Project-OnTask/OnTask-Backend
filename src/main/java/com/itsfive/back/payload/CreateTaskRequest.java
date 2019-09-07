@@ -11,14 +11,17 @@ public class CreateTaskRequest {
 	
 	private Date dueDate;
 	
+	private Date startDate;
+	
 	private Long groupId;
 
-	public CreateTaskRequest(Long createdBy, String name, String description, Date dueDate, Long groupId) {
+	public CreateTaskRequest(Long createdBy, String name, String description, Date dueDate,Date startDate, Long groupId) {
 		super();
 		this.createdBy = createdBy;
 		this.name = name;
 		this.description = description;
 		this.dueDate = dueDate;
+		this.startDate = startDate;
 		this.groupId = groupId;
 	}
 
@@ -60,5 +63,13 @@ public class CreateTaskRequest {
 
 	public void setGroupId(Long groupId) {
 		this.groupId = groupId;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 }	

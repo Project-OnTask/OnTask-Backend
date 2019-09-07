@@ -31,7 +31,7 @@ public class TaskService {
 	private UserRepository userRepository;
 	
 	public void createTaskForGroup(CreateTaskRequest createTaskRequest) {
-		Task task = new Task(createTaskRequest.getName(),createTaskRequest.getDescription(),createTaskRequest.getDueDate());
+		Task task = new Task(createTaskRequest.getName(),createTaskRequest.getDescription(),createTaskRequest.getStartDate(),createTaskRequest.getDueDate());
 		Group group = groupRepository.findById(createTaskRequest.getGroupId()).get();
 		task.setGroup(group);
 		User user = userRepository.findById(createTaskRequest.getCreatedBy()).get();

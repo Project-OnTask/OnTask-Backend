@@ -37,6 +37,9 @@ public class Task extends DateAudit{
     
     @Lob 
     private String description;
+
+    @Temporal(TemporalType.DATE)
+	private Date startDate;
     
     @Temporal(TemporalType.DATE)
 	private Date dueDate;
@@ -75,11 +78,12 @@ public class Task extends DateAudit{
 		
 	}
 
-	public Task(@NotBlank @Size(max = 30) String name, @Size(max = 160) String description, Date dueDate) {
+	public Task(@NotBlank @Size(max = 30) String name, @Size(max = 160) String description, Date startDate,Date dueDate) {
 		super();
 		this.status = "new";
 		this.name = name;
 		this.description = description;
+		this.startDate = startDate;
 		this.dueDate = dueDate;
 	}
 
@@ -121,6 +125,14 @@ public class Task extends DateAudit{
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 	
 
