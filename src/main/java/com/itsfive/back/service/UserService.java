@@ -137,24 +137,6 @@ public class UserService {
 			return userRepository.findById(id).get().getProPicURL();
 	 }
 	 
-	 public void editCover(MultipartFile file,long userId) {
-		 String fileName = fileService.storeFile(file);
-	        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-	                 .path("/api/downloadFile/")
-	                 .path(fileName)
-	                 .toUriString();
-
-	         UploadFileResponse response =  new UploadFileResponse(fileName, fileDownloadUri,
-	                file.getContentType(), file.getSize());
-	         User user = userRepository.findById(userId).get();
-	         user.setCoverURL(response.getFileDownloadUri());
-	         userRepository.save(user);
-	 }
-	 
-	 public String getCoverURL(Long id){
-			return userRepository.findById(id).get().getCoverURL();
-	 }
-	 
 	 public void verifyMobile(VerifyMobileRequest verifyPhoneReq) throws IOException, NexmoClientException {
 		 NexmoClient client = NexmoClient.builder()
 				  .apiKey("0ff50012")
