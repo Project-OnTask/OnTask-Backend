@@ -40,7 +40,7 @@ public class Group extends DateAudit{
     @Size(max = 160)
     private String description;
     
-    @ManyToOne
+    @OneToOne
     private User created_by;
     
     public User getCreated_by() {
