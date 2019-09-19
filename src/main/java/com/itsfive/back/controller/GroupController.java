@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.exception.UserNotFoundException;
 import com.itsfive.back.model.Group;
@@ -69,7 +70,7 @@ public class GroupController {
 	
 	//create group
     @PostMapping("/groups")
-    public void createGroup(@RequestBody CreateGroupRequest createGroupRequest) {
+    public Long createGroup(@RequestBody CreateGroupRequest createGroupRequest) throws JsonProcessingException {
     	Optional<User> createdBy = userService.getUserById(createGroupRequest.getUserId());
     	if(!createdBy.isPresent()) {
     		throw new BadRequestException("There is no user for provided id");
@@ -85,21 +86,24 @@ public class GroupController {
             	GroupMembersKey key = new GroupMembersKey(createGroupRequest.getMembers()[i],group.getId());
             	GroupMember member = new GroupMember(key);
             	member.setRole("member");
-            	groupMemberService.addMemberAtGroupInit(member);
+            	groupMemberService.addMember(member);
             }
-        }	
+        }
+        return groupId;
     }
     
-    @GetMapping("/{user}/groups")
-    public List<GetAllGroupsResponse> getGroups(@PathVariable Long user) {
-    	List<GroupMember> memRecords = groupMemberService.getGroupsByMember(user);
+    @GetMapping("/{userId}/groups")
+    public List<GetAllGroupsResponse> getGroups(@PathVariable Long userId) {
+    	List<GroupMember> memRecords = groupMemberService.getGroupsByMember(userId);
     	List<GetAllGroupsResponse> res = new ArrayList<>();
     	if(memRecords != null) {
     		for(int i=0;i<memRecords.size();i++) {
+    			List<GroupActivity> activities = groupActivityRepository.findByGroupId(memRecords.get(i).getId().getGroupId());
     			GetAllGroupsResponse group = new GetAllGroupsResponse(
     					memRecords.get(i).getId().getGroupId(),
     					memRecords.get(i).getGroup().getName(),
-    					memRecords.get(i).getRole()
+    					memRecords.get(i).getRole(),
+    					activities.get(activities.size() - 1).getDescription()
     			);
     			res.add(group);
     		}

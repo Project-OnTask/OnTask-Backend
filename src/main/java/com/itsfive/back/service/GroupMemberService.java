@@ -11,7 +11,12 @@ import javax.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.itsfive.back.config.PusherConfig;
 import com.itsfive.back.exception.AppException;
+import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.GroupInvite;
 import com.itsfive.back.model.GroupInviteKey;
 import com.itsfive.back.model.GroupMember;
@@ -35,27 +40,53 @@ public class GroupMemberService {
 	@Autowired
 	private UserRepository userRepository;
 	
+	ObjectMapper objectMapper = new ObjectMapper();
+	JavaTimeModule module = new JavaTimeModule();
+	
 	@Autowired
 	private GroupRepository groupRepository;
 	
 	@Autowired
+	private UserNotificationService userNotificationService;
+	
+	@Autowired
 	private GroupInviteRepository groupInviteRepository;
+	
+	@Autowired
+	private GroupActivityService groupActivityService;
 	
     @Autowired
     private MailSenderService senderService;
     
-	public GroupMember addMember(String itoken,long userId) {
+	public GroupMember addMemberByToken(String itoken,long userId) throws JsonProcessingException {
+		objectMapper.registerModule(module);
 		GroupInvite invite = groupInviteRepository.findByIdItoken(itoken);
 		GroupMembersKey mkey = new GroupMembersKey(userId,invite.getId().getGroupId());
 		GroupMember groupMember = new GroupMember(mkey);
 		groupMember.setRole("member");
 		groupMemberRepository.save(groupMember);
 		groupInviteRepository.delete(invite);
+		User user = userRepository.findById(mkey.getUserId()).get();
+		
+		GroupActivity act = groupActivityService.addGroupActivity(invite.getId().getGroupId(),user,"<b>"+user.getFName()+"</b> was added to group <b>"+
+		groupRepository.findById(mkey.getGroupId()).get().getName()+"</b>"); 
+		userNotificationService.createUserNotificationsForGroupMembers(invite.getId().getGroupId(), act);
+		PusherConfig.setObj().trigger("group_"+mkey.getGroupId(), "new_activity",objectMapper.writeValueAsString(act));
 		return groupMember;
 	}
 	
-	public void addMemberAtGroupInit(GroupMember member) {
+	public void addMember(GroupMember member) throws JsonProcessingException {
+		objectMapper.registerModule(module);
+		User user = userRepository.findById(member.getId().getUserId()).get(); 
+		member.setRole("member"); 
 		groupMemberRepository.save(member);
+		
+		GroupActivity act = groupActivityService.addGroupActivity(member.getId().getGroupId(),user,"<b>"+user.getFName()+"</b> was added to group <b>"+
+		groupRepository.findById(member.getId().getGroupId()).get().getName()+"</b>"); 
+		userNotificationService.createUserNotificationsForGroupMembers(member.getId().getGroupId(), act);
+		userNotificationService.createUserNotification(user, act);
+		PusherConfig.setObj().trigger("user_"+member.getId().getUserId(), "group_add",objectMapper.writeValueAsString(act));
+		PusherConfig.setObj().trigger("group_"+member.getId().getGroupId(), "new_activity",objectMapper.writeValueAsString(act));
 	}
 	
 	public void addAdmin(GroupMember admin) {
@@ -93,6 +124,19 @@ public class GroupMemberService {
 				);
 	}
 	
+	public List<User> getGroupMembersAsUsers(long groupId){
+		List<GroupMember> members =  groupMemberRepository.findAllByGroupId(groupId);
+		List <User> users = new ArrayList<User>();
+		for(GroupMember member: members) {
+			users.add(member.getUser());
+		}
+		return users;
+	}
+	
+	public List<GroupMember>getGroupMembersForNotifications(long groupId){
+		return groupMemberRepository.findAllByGroupId(groupId);
+	}
+	
 	public GroupInvite createInviteLink(long userId,long groupId) {
 		User createdBy = userRepository.findById(userId).get();
 		String token = UUID.randomUUID().toString();
@@ -100,6 +144,11 @@ public class GroupMemberService {
 		GroupInvite invite = new GroupInvite(inv,createdBy);
 		groupInviteRepository.save(invite); 
 		return invite;
+	}
+	
+	public void removeMember(long userId,long groupId) {
+		GroupMember member = groupMemberRepository.findByUserIdAndGroupId(userId, groupId).get();
+		groupMemberRepository.delete(member); 
 	}
 	
 	public Stream<Object> searchGroupMembers(long groupId,String query){

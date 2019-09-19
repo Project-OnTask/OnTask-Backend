@@ -7,6 +7,7 @@ import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.model.GroupInvite;
 import com.itsfive.back.model.GroupMember;
 import com.itsfive.back.model.GroupMembersKey;
@@ -35,8 +37,13 @@ public class GroupMemberController {
 	private GroupMemberRepository groupMemberRepository;
 	
     @PostMapping("/member/{itoken}")
-	public GroupMember createMember(@PathVariable String itoken,@RequestParam("user_id") long userId ) {
-    	return groupMemberService.addMember(itoken,userId);
+	public GroupMember createMember(@PathVariable String itoken,@RequestParam("user_id") long userId ) throws JsonProcessingException {
+    	return groupMemberService.addMemberByToken(itoken,userId);
+	}
+    
+    @PostMapping("/members")
+    public void createMember(@RequestBody GroupMembersKey groupMember )throws JsonProcessingException {
+    	groupMemberService.addMember(new GroupMember(new GroupMembersKey(groupMember.getUserId(),groupMember.getGroupId())));
 	}
     
     @PostMapping("/member/admin")
@@ -57,6 +64,11 @@ public class GroupMemberController {
     @PostMapping("/member/member")
 	public void removeMemberAdmin(@RequestBody GroupMember groupMember ) {
     	groupMemberService.removeMemberAdmin(groupMember);
+	}
+    
+    @DeleteMapping("/member/{groupId}/remove/{memberId}")
+	public void removeMember(@PathVariable("groupId") long groupId,@PathVariable("memberId") long memberId ) {
+    	groupMemberService.removeMember(memberId,groupId);
 	}
     
     @GetMapping("/member/{groupId}/is-admin/{userId}")

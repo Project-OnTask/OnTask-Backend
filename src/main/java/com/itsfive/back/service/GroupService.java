@@ -28,7 +28,7 @@ public class GroupService {
 	//create group
 	public Group createGroup(Group group,User createdBy) {
 		Group t = groupRepository.save(group);
-		groupActivityService.addGroupActivity(t.getId(),createdBy,createdBy.getFName() + " created group " + t.getName()  );
+		groupActivityService.addGroupActivity(t.getId(),createdBy,"<b>"+createdBy.getFName()+"</b>" + " created group " + "<b>"+t.getName()+"</b>"  );
 		return t;
 	}
 	

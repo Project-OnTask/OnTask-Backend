@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.Task;
@@ -41,7 +42,7 @@ public class TaskController {
 	private GroupMemberService groupMemberService;
 	
     @PostMapping("/tasks")
-    public void createTask(@RequestBody CreateTaskRequest createTaskRequest) {
+    public void createTask(@RequestBody CreateTaskRequest createTaskRequest) throws JsonProcessingException {
     	boolean isAdmin = groupMemberService.isMemberAnAdmin(createTaskRequest.getCreatedBy(),createTaskRequest.getGroupId());
     	
     	    	if(!isAdmin) {
@@ -58,6 +59,11 @@ public class TaskController {
     @GetMapping("/tasks/{id}")
     public Task getTaskById(@PathVariable Long id){
     	return taskService.getTaskById(id);
+    }
+    
+    @PostMapping("/tasks/completed/{userId}/{taskId}")
+    public boolean markTaskAsCompleted(@PathVariable("userId") Long userId,@PathVariable("taskId") Long taskId){
+    	return taskService.toggleTaskCompletedStatus(userId, taskId);
     }
     
     @RequestMapping(value = "/tasks/{id}", method = RequestMethod.DELETE)
