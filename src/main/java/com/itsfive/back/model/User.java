@@ -32,13 +32,8 @@ public class User extends DateAudit{
     @Size(max = 30)
     private String lname;
     
-    public String getLname() {
-		return lname;
-	}
-
-	public void setLname(String lname) {
-		this.lname = lname;
-	}
+    @Lob
+    private String bio;
 
 	@Size(max = 40)
     private String username;
@@ -67,30 +62,84 @@ public class User extends DateAudit{
     @Column(name = "pro_pic")
     private String proPicURL;
     
-    @Column(name = "cover")
-    private String coverURL;
+    @Column(name = "web_link")
+	private String websiteLink;
+
+    @Column(name = "twitter_link")
+	private String twitterLink;
+
+    @Column(name = "so_link")
+	private String stackOverflowLink;
+
+    @Column(name = "github_link")
+	private String githubLink;
+
+    @Column(name = "linkedin_link")
+	private String linkedInLink;
     
-    @Column(name = "github_url")
-    private String githubURL;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<UserWork> userWorks;
     
-    @Column(name = "web_url")
-    private String webURL;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<UserEducation> userEducations;
+    	
+	public String getWebsiteLink() {
+		return websiteLink;
+	}
+
+	public void setWebsiteLink(String websiteLink) {
+		this.websiteLink = websiteLink;
+	}
+
+	public String getTwitterLink() {
+		return twitterLink;
+	}
+
+	public void setTwitterLink(String twitterLink) {
+		this.twitterLink = twitterLink;
+	}
+
+	public String getStackOverflowLink() {
+		return stackOverflowLink;
+	}
+
+	public void setStackOverflowLink(String stackOverflowLink) {
+		this.stackOverflowLink = stackOverflowLink;
+	}
+
+	public String getGithubLink() {
+		return githubLink;
+	}
+
+	public void setGithubLink(String githubLink) {
+		this.githubLink = githubLink;
+	}
+
+	public String getLinkedInLink() {
+		return linkedInLink;
+	}
+
+	public void setLinkedInLink(String linkedInLink) {
+		this.linkedInLink = linkedInLink;
+	}
+
+	public String getBio() {
+		return bio;
+	}
+
+	public void setBio(String bio) {
+		this.bio = bio;
+	}
+	
+	public String getLname() {
+		return lname;
+	}
+
+	public void setLname(String lname) {
+		this.lname = lname;
+	}
    
-	public String getGithubURL() {
-		return githubURL;
-	}
 
-	public void setGithubURL(String githubURL) {
-		this.githubURL = githubURL;
-	}
-
-	public String getWebURL() {
-		return webURL;
-	}
-
-	public void setWebURL(String webURL) {
-		this.webURL = webURL;
-	}
 
 	public String getProPicURL() {
 		return proPicURL;
@@ -98,14 +147,6 @@ public class User extends DateAudit{
 
 	public void setProPicURL(String proPicURL) {
 		this.proPicURL = proPicURL;
-	}
-
-	public String getCoverURL() {
-		return coverURL;
-	}
-
-	public void setCoverURL(String coverURL) {
-		this.coverURL = coverURL;
 	}
 
 	@OneToMany(mappedBy = "user")

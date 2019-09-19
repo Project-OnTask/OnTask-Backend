@@ -57,6 +57,8 @@ public class Task extends DateAudit{
     private User createdBy;
     
     private String status;
+    
+    private boolean isCompleted;
 
 	public User getCreatedBy() {
 		return createdBy;
@@ -85,6 +87,14 @@ public class Task extends DateAudit{
 		this.description = description;
 		this.startDate = startDate;
 		this.dueDate = dueDate;
+	}
+
+	public boolean isCompleted() {
+		return isCompleted;
+	}
+
+	public void setCompleted(boolean isCompleted) {
+		this.isCompleted = isCompleted;
 	}
 
 	public Long getId() {
