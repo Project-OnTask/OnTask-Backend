@@ -6,7 +6,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.itsfive.back.config.PusherConfig;
 import com.itsfive.back.model.Group;
+import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.Notice;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.AddNoticeRequest;
@@ -26,10 +31,17 @@ public class NoticeService {
 	@Autowired
 	private GroupActivityService groupActivityService;
 	
+	ObjectMapper objectMapper = new ObjectMapper();
+	JavaTimeModule module = new JavaTimeModule();
+	
 	@Autowired
 	private NoticeRepository noticeRepository;
 	
-	public void addNotice(AddNoticeRequest addNoteReq) {
+	@Autowired
+	private UserNotificationService userNotificationService;
+	
+	public void addNotice(AddNoticeRequest addNoteReq) throws JsonProcessingException { 
+		objectMapper.registerModule(module);
 		Notice note = new Notice();
 		User createdBy = userRepository.findById(addNoteReq.getUserId()).get();
 		Group group =groupRepository.findById(addNoteReq.getGroupId()).get();
@@ -38,7 +50,9 @@ public class NoticeService {
 		note.setTitle(addNoteReq.getTitle());
 		note.setContent(addNoteReq.getContent());
 		noticeRepository.save(note);
-		groupActivityService.addGroupActivity(group.getId(),createdBy,createdBy.getFName() + " posted announcement " + addNoteReq.getTitle()  );
+		GroupActivity act = groupActivityService.addGroupActivity(group.getId(),createdBy,"<b>"+createdBy.getFName() + "</b> posted announcement <b>" + addNoteReq.getTitle()+"</b> in group <b>"+group.getName()+"</b>"  );
+		userNotificationService.createUserNotificationsForGroupMembers(addNoteReq.getGroupId(), act);
+		PusherConfig.setObj().trigger("group_"+addNoteReq.getGroupId(), "new_activity",objectMapper.writeValueAsString(act));
 	}
 
 	public List<GetNoticesResponse> getNoticesByGroup(long groupId) {

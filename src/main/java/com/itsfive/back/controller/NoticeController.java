@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.model.Notice;
 import com.itsfive.back.payload.AddNoticeRequest;
 import com.itsfive.back.payload.GetNoticesResponse;
@@ -22,7 +23,7 @@ public class NoticeController {
 	private NoticeService noticeService;
 	
 	@PostMapping("/notices")
-	public void addNotice(@RequestBody AddNoticeRequest addNoteReq) {
+	public void addNotice(@RequestBody AddNoticeRequest addNoteReq) throws JsonProcessingException { 
 		noticeService.addNotice(addNoteReq);
 	}
 	
