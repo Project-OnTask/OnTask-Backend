@@ -24,10 +24,10 @@ public class GroupActivityService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	public void addGroupActivity(Long groupId,User user,String description) {
+	public  GroupActivity addGroupActivity(Long groupId,User user,String description) {
 		Group group = groupRepository.findById(groupId).get();
 		GroupActivity groupActivity = new GroupActivity(description,user,group);
-		groupActivityRepository.save(groupActivity);
+		return groupActivityRepository.save(groupActivity);
 	}
 	
 	public List<GroupActivity> getGroupActivity(Long groupId) {
