@@ -37,6 +37,7 @@ import com.itsfive.back.model.UserWork;
 import com.itsfive.back.payload.AddEducationRequest;
 import com.itsfive.back.payload.AddWorkplaceRequest;
 import com.itsfive.back.payload.BasicUserInfoUpdateReq;
+import com.itsfive.back.payload.GetProPicResponse;
 import com.itsfive.back.payload.GetUserResponse;
 import com.itsfive.back.payload.PasswordResetRequest;
 import com.itsfive.back.payload.TaskAsigneeResponse;
@@ -126,8 +127,8 @@ public class UserController {
 	    }
 	 
 	 @PostMapping("/auth/check-token/{token}")
-	 public void checkToken(@PathVariable String token) {
-		 userService.ifResetTokenValid(token);
+	 public boolean checkToken(@PathVariable String token) {
+		 return userService.ifResetTokenValid(token);
 	 }
 	 
 	 @PostMapping("/auth/reset-pwd")
@@ -151,8 +152,8 @@ public class UserController {
 	 }
 	 
 	 @GetMapping("/user/{id}/pro-pic")
-	 public String getProPicURL(@PathVariable long id) {
-	    return userService.getProPicURL(id);
+	 public GetProPicResponse getProPic(@PathVariable long id) {
+	    return userService.getProPic(id);
 	 }
 	 
 	 @PostMapping("/auth/verify/mobile")

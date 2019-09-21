@@ -17,6 +17,7 @@ import com.itsfive.back.payload.SignUpRequest;
 import com.itsfive.back.repository.RoleRepository;
 import com.itsfive.back.repository.UserRepository;
 import com.itsfive.back.security.JwtTokenProvider;
+import com.itsfive.back.service.MD5Util;
 import com.itsfive.back.service.MailSenderService;
 import com.itsfive.back.service.UserService;
 import com.nexmo.client.NexmoClient;
@@ -134,13 +135,13 @@ public class AuthController {
         // Creating user's account
         User user = new User(signUpRequest.getFName(), signUpRequest.getUsername(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());
-
+        user.setEmailHash(MD5Util.md5Hex(signUpRequest.getEmail())); 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         
         String token = UUID.randomUUID().toString();
         user.setConfirmMailToken(token);
         User result = userRepository.save(user);
-     
+        
    	 String content = "<html>" +
                 "<body>" +
                 "<p>Hello "+ user.getFName()+",</p>" +

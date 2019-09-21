@@ -24,6 +24,7 @@ import com.itsfive.back.exception.AppException;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.PasswordResetToken;
 import com.itsfive.back.model.User;
+import com.itsfive.back.payload.GetProPicResponse;
 import com.itsfive.back.payload.JwtAuthenticationResponse;
 import com.itsfive.back.payload.PasswordResetRequest;
 import com.itsfive.back.payload.UpdateEmailRequest;
@@ -133,8 +134,9 @@ public class UserService {
 	         userRepository.save(user);
 	 }
 	 
-	 public String getProPicURL(Long id){
-			return userRepository.findById(id).get().getProPicURL();
+	 public GetProPicResponse getProPic(Long id){
+		 	User user = userRepository.findById(id).get();
+			return new GetProPicResponse(user.getProPicURL(),user.getEmailHash());
 	 }
 	 
 	 public void verifyMobile(VerifyMobileRequest verifyPhoneReq) throws IOException, NexmoClientException {
