@@ -16,6 +16,7 @@ import com.itsfive.back.model.Group;
 import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.SubTask;
 import com.itsfive.back.model.Task;
+import com.itsfive.back.model.TaskActivity;
 import com.itsfive.back.model.User;
 import com.itsfive.back.model.UserNotification;
 import com.itsfive.back.payload.CreateTaskRequest;
@@ -44,6 +45,9 @@ public class TaskService {
 	private GroupActivityService groupActivityService;
 	
 	@Autowired
+	private TaskActivityService taskActivityService;
+	
+	@Autowired
 	private GroupRepository groupRepository;
 	
 	@Autowired
@@ -53,7 +57,6 @@ public class TaskService {
 	JavaTimeModule module = new JavaTimeModule();
 	
 	public void createTaskForGroup(CreateTaskRequest createTaskRequest) throws JsonProcessingException {
-		objectMapper.registerModule(module);
 		Task task = new Task(createTaskRequest.getName(),createTaskRequest.getDescription(),createTaskRequest.getStartDate(),createTaskRequest.getDueDate());
 		Group group = groupRepository.findById(createTaskRequest.getGroupId()).get();
 		task.setGroup(group);
@@ -62,8 +65,8 @@ public class TaskService {
 		taskRepository.save(task);
 		String desc = "<b>"+user.getFName()+"</b> added a new task <b>"+task.getName()+"</b> in group <b>"+group.getName()+"</b>";
 		GroupActivity gc = groupActivityService.addGroupActivity(group.getId(), user, desc);
-		userNotificationService.createUserNotificationsForGroupMembers(createTaskRequest.getGroupId(), gc);
- 		PusherConfig.setObj().trigger("group_"+group.getId(), "new_activity",objectMapper.writeValueAsString(gc));
+		taskActivityService.addTaskActivity(group.getId(), user, desc);
+		userNotificationService.createUserNotificationsForGroupAdmins(createTaskRequest.getGroupId(), gc);
 	}
 	
 	public List<Task> getAllTasksOfGroup(Long groupId) {
@@ -74,10 +77,13 @@ public class TaskService {
 		return taskRepository.findById(id).get();
 	}
 	
-	public void editTaskDescription(long taskId,String description) {
+	public void editTaskDescription(long editedById,long taskId,String description) throws JsonProcessingException {
 		Task task = taskRepository.findById(taskId).get();
+		User editedBy = userRepository.findById(editedById).get();
 		task.setDescription(description);
 		taskRepository.save(task);
+		String desc = "<b>"+editedBy.getFName()+"</b> edited task description";
+		taskActivityService.addTaskActivity(taskId, editedBy, desc);
 	}
 
 	public boolean toggleTaskCompletedStatus(long userId,long taskId) {

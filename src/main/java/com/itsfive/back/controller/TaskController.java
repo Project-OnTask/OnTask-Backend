@@ -18,12 +18,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.Task;
+import com.itsfive.back.model.TaskActivity;
 import com.itsfive.back.payload.CreateTaskRequest;
 import com.itsfive.back.payload.EditTaskDescRequest;
 import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.repository.TaskRepository;
 import com.itsfive.back.service.FileService;
 import com.itsfive.back.service.GroupMemberService;
+import com.itsfive.back.service.TaskActivityService;
 import com.itsfive.back.service.TaskService;
 
 @RestController
@@ -31,6 +33,9 @@ import com.itsfive.back.service.TaskService;
 public class TaskController {
 	@Autowired
 	private TaskService taskService;
+	
+	@Autowired
+	private TaskActivityService taskActivityService;
 	
 	@Autowired
 	private FileService fileService;
@@ -72,8 +77,13 @@ public class TaskController {
     }
     
     @PostMapping("/tasks/edit-desc")
-    public void editTaskDescription(@RequestBody EditTaskDescRequest Req) {
-    	taskService.editTaskDescription(Req.getTaskId(), Req.getDescription());
+    public void editTaskDescription(@RequestBody EditTaskDescRequest Req) throws JsonProcessingException { 
+    	taskService.editTaskDescription(Req.getEditedBy(),Req.getTaskId(), Req.getDescription());
+    }
+    
+    @GetMapping("/tasks/{taskId}/activity")
+    public List<TaskActivity> getTaskActivities(@PathVariable long taskId){ 
+    	return taskActivityService.getTaskActivities(taskId);
     }
  
 }
