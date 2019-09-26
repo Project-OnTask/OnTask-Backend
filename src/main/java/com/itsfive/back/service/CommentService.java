@@ -39,6 +39,8 @@ public class CommentService {
 		for (int i = 0; i < cmnts.size(); i++) {
 			GetCommentResponse obj = new GetCommentResponse(
 					cmnts.get(i).getId(),
+					cmnts.get(i).getCreatedBy().getEmailHash(),
+					cmnts.get(i).getCreatedBy().getProPicURL(),
 					cmnts.get(i).getCreatedBy().getFName(),
 					cmnts.get(i).getCreatedAt(),
 					cmnts.get(i).getContent());
@@ -58,6 +60,8 @@ public class CommentService {
 		
 		GetCommentResponse obj = new GetCommentResponse(
 				comment.getId(),
+				comment.getCreatedBy().getEmailHash(),
+				comment.getCreatedBy().getProPicURL(),
 				comment.getCreatedBy().getFName(),
 				comment.getCreatedAt(),
 				comment.getContent()); 

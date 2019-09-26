@@ -6,18 +6,48 @@ public class GetCommentResponse {
 
     private Long id;
 	
+    private String emailHash;
+    
+    private String propicURL;
+    
 	private String fname;
 	
 	private Instant createdAt;
 	
     private String content;
 
-	public GetCommentResponse(Long id, String fname, Instant createdAt, String content) {
+	public GetCommentResponse(Long id, String emailHash,String propicURL,String fname, Instant createdAt, String content) {
 		super();
 		this.id = id;
+		this.emailHash = emailHash;
+		this.propicURL = propicURL;
 		this.fname = fname;
 		this.createdAt = createdAt;
 		this.content = content;
+	}
+
+	public String getEmailHash() {
+		return emailHash;
+	}
+
+	public void setEmailHash(String emailHash) {
+		this.emailHash = emailHash;
+	}
+
+	public String getPropicURL() {
+		return propicURL;
+	}
+
+	public void setPropicURL(String propicURL) {
+		this.propicURL = propicURL;
+	}
+
+	public String getFname() {
+		return fname;
+	}
+
+	public void setFname(String fname) {
+		this.fname = fname;
 	}
 
 	public Long getId() {
@@ -26,14 +56,6 @@ public class GetCommentResponse {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getFName() {
-		return fname;
-	}
-
-	public void setFName(String fname) {
-		this.fname = fname;
 	}
 
 	public Instant getCreatedAt() {
