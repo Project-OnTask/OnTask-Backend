@@ -14,5 +14,5 @@ public interface GroupMemberRepository  extends CrudRepository<GroupMember, Long
 	
 	public Optional<GroupMember> findByUserIdAndGroupId(Long userId,Long groupId); 
 	
-	public List<GroupMember> findByGroupIdAndRole(Long groupId,String role);
+	public List<GroupMember> findAllByGroupIdAndRole(Long groupId,String role);
 }

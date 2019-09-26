@@ -139,7 +139,7 @@ public class GroupController {
     }
     
     @PostMapping("/groups/{groupId}/edit-desc")
-    public void editGroupDescription(@PathVariable long groupId,@RequestParam("editedBy") Long editedBy,@RequestParam("desc") String description) {	
+    public void editGroupDescription(@PathVariable long groupId,@RequestParam("editedBy") Long editedBy,@RequestParam("desc") String description) throws JsonProcessingException {	
     	groupService.editGroupDescription(groupId,editedBy,description);
     }
     

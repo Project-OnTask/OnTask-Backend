@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.itsfive.back.exception.UserNotFoundException;
 import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.GroupMember;
 import com.itsfive.back.model.User;
@@ -14,6 +17,8 @@ import com.itsfive.back.model.UserNotification;
 import com.itsfive.back.payload.UnseenNotification;
 import com.itsfive.back.repository.UserNotificationRepository;
 import com.itsfive.back.repository.UserRepository;
+import com.itsfive.back.security.CurrentUser;
+import com.itsfive.back.security.UserPrincipal;
 
 @Service
 public class UserNotificationService {
@@ -26,9 +31,23 @@ public class UserNotificationService {
 	@Autowired
 	private UserNotificationRepository userNotificationRepository;
 	
+	ObjectMapper objectMapper = new ObjectMapper();
+	JavaTimeModule module = new JavaTimeModule();
+	
 	public void createUserNotificationsForGroupMembers(Long groupId,GroupActivity activity) {
 		List<GroupMember> members = groupMemberService.getGroupMembersForNotifications(groupId);
 		for (GroupMember member : members)  
+        { 
+			if(member.getUser() != null) {
+				UserNotification notification = new UserNotification(activity,member.getUser());
+				userNotificationRepository.save(notification);
+			}
+        } 
+	}
+	
+	public void createUserNotificationsForGroupAdmins(Long groupId,GroupActivity activity) {
+		List<GroupMember> admins = groupMemberService.getGroupAdminsForNotifications(groupId);
+		for (GroupMember member : admins)  
         { 
 			if(member.getUser() != null) {
 				UserNotification notification = new UserNotification(activity,member.getUser());

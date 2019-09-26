@@ -31,9 +31,6 @@ public class NoticeService {
 	@Autowired
 	private GroupActivityService groupActivityService;
 	
-	ObjectMapper objectMapper = new ObjectMapper();
-	JavaTimeModule module = new JavaTimeModule();
-	
 	@Autowired
 	private NoticeRepository noticeRepository;
 	
@@ -41,7 +38,6 @@ public class NoticeService {
 	private UserNotificationService userNotificationService;
 	
 	public void addNotice(AddNoticeRequest addNoteReq) throws JsonProcessingException { 
-		objectMapper.registerModule(module);
 		Notice note = new Notice();
 		User createdBy = userRepository.findById(addNoteReq.getUserId()).get();
 		Group group =groupRepository.findById(addNoteReq.getGroupId()).get();
@@ -52,7 +48,6 @@ public class NoticeService {
 		noticeRepository.save(note);
 		GroupActivity act = groupActivityService.addGroupActivity(group.getId(),createdBy,"<b>"+createdBy.getFName() + "</b> posted announcement <b>" + addNoteReq.getTitle()+"</b> in group <b>"+group.getName()+"</b>"  );
 		userNotificationService.createUserNotificationsForGroupMembers(addNoteReq.getGroupId(), act);
-		PusherConfig.setObj().trigger("group_"+addNoteReq.getGroupId(), "new_activity",objectMapper.writeValueAsString(act));
 	}
 
 	public List<GetNoticesResponse> getNoticesByGroup(long groupId) {

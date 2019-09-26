@@ -113,7 +113,7 @@ public class GroupMemberService {
 	}
 	
 	public Stream<Object> getGroupAdmins(long groupId){
-		return groupMemberRepository.findByGroupIdAndRole(groupId,"admin").stream().map(
+		return groupMemberRepository.findAllByGroupIdAndRole(groupId,"admin").stream().map(
 			member -> new GetGroupAdminResponse(member.getUser().getFName(),member.getUser().getLname(),member.getUser().getProPicURL())
 				);
 	}
@@ -135,6 +135,10 @@ public class GroupMemberService {
 	
 	public List<GroupMember>getGroupMembersForNotifications(long groupId){
 		return groupMemberRepository.findAllByGroupId(groupId);
+	}
+	
+	public List<GroupMember>getGroupAdminsForNotifications(long groupId){
+		return groupMemberRepository.findAllByGroupIdAndRole(groupId,"admin");
 	}
 	
 	public GroupInvite createInviteLink(long userId,long groupId) {
@@ -168,7 +172,8 @@ public class GroupMemberService {
 				 ((User) user).getFName(), 
 				 ((User) user).getLname(),
 				 ((User) user).getEmail(),
-				 ((User) user).getProPicURL()));
+				 ((User) user).getProPicURL(),
+				 ((User) user).getEmailHash()));
 	}
 
 }

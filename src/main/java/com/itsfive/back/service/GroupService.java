@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.User;
@@ -26,7 +27,7 @@ public class GroupService {
 	private GroupActivityService groupActivityService;
 	
 	//create group
-	public Group createGroup(Group group,User createdBy) {
+	public Group createGroup(Group group,User createdBy) throws JsonProcessingException {
 		Group t = groupRepository.save(group);
 		groupActivityService.addGroupActivity(t.getId(),createdBy,"<b>"+createdBy.getFName()+"</b>" + " created group " + "<b>"+t.getName()+"</b>"  );
 		return t;
@@ -38,12 +39,12 @@ public class GroupService {
 	}
 	
     //edit group description
-	public void editGroupDescription(Long id,Long editedBy,String description) { 
+	public void editGroupDescription(Long id,Long editedBy,String description) throws JsonProcessingException {  
 		Group group = groupRepository.findById(id).get();
 		User user = userRepository.findById(editedBy).get();
 		group.setDescription(description);
 		groupRepository.save(group);
-		groupActivityService.addGroupActivity(group.getId(),user,user.getFName() + " edited group description");
+		groupActivityService.addGroupActivity(group.getId(),user,"<b>"+user.getFName() + "</b> edited group description");
 	}
 	
     //get all groups in which a user is a member
