@@ -188,6 +188,7 @@ public class AuthController {
 //        	throw new AppException("Error occured with Nexmo");
 //        }
    	 	user.setPassword(passwordEncoder.encode(mobileSignupRequest.getMobile()));
+   	    user.setEmailHash(MD5Util.md5Hex(mobileSignupRequest.getMobile()));
    	 	user.setEmail(mobileSignupRequest.getMobile());
         User result = userRepository.save(user);  
         		
