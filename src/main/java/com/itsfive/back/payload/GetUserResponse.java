@@ -11,13 +11,24 @@ public class GetUserResponse {
 
 	private String propicURL;
 	
-	public GetUserResponse(long userId, String fname, String lname,String email,String propicURL) {
+	private String emailHash;
+	
+	public GetUserResponse(long userId, String fname, String lname,String email,String propicURL,String emailHash) {
 		super();
 		this.userId = userId;
 		this.fname = fname;
 		this.lname = lname;
 		this.email = email;
 		this.propicURL = propicURL;
+		this.emailHash = emailHash;
+	}
+
+	public String getEmailHash() {
+		return emailHash;
+	}
+
+	public void setEmailHash(String emailHash) {
+		this.emailHash = emailHash;
 	}
 
 	public long getUserId() {

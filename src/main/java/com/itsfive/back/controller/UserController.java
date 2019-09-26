@@ -190,7 +190,8 @@ public class UserController {
 				 user.getFName(),
 				 user.getLname(),
 				 user.getEmail(),
-				 user.getProPicURL()));
+				 user.getProPicURL(),
+				 user.getEmailHash()));
 	 }
 	 
 	 @GetMapping("/users/{userId}")
