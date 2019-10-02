@@ -44,6 +44,7 @@ import com.itsfive.back.payload.TaskAsigneeResponse;
 import com.itsfive.back.payload.UpdateEmailRequest;
 import com.itsfive.back.payload.UpdatePasswordRequest;
 import com.itsfive.back.payload.UploadFileResponse;
+import com.itsfive.back.payload.UserContactUpdateRequest;
 import com.itsfive.back.payload.UserWebPresenceUpdateReq;
 import com.itsfive.back.payload.VerifyMobileRequest;
 import com.itsfive.back.repository.GroupMemberRepository;
@@ -214,13 +215,6 @@ public class UserController {
 	            ids.add(task);
 	        }  
 	    	return ids;
-//	    	return asTasks.stream().map(
-//					asignee -> {
-//						return taskRepository.findById(asignee.getId().getTaskId()).get();
-//						
-//						//return new TaskAsigneeResponse(user.getFName(),user.getProPicURL(),user.getLname(),user.getId());
-//					}
-//			);
 	    }
 	 
 	 @PostMapping("/user/{userId}/basic-info")
@@ -267,6 +261,18 @@ public class UserController {
 		 userRepository.save(user); 
 	 }
 
+	 @PostMapping("/user/contact")
+	 public void updateContactInfo(@RequestBody UserContactUpdateRequest req) {
+		 User user = userRepository.findById(req.getUserId()).get();
+		 if(req.getMobile() != null) {
+			 user.setMobile(req.getMobile());
+		 }
+		 if(req.getEmail() != null) {
+			 user.setEmail(req.getEmail()); 
+		 }
+		 userRepository.save(user);
+	 }
+	 
 	 @PostMapping("/user/work")
 	 public void addNewWork(@RequestBody AddWorkplaceRequest addWorkReq) {
 		 User user = userRepository.findById(addWorkReq.getUserId()).get();
