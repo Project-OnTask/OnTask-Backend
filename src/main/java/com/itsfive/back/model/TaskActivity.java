@@ -14,11 +14,12 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.itsfive.back.model.audit.DateAudit;
 
 @Entity
 @Table(name = "task_activity")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class TaskActivity {
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class TaskActivity extends DateAudit{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,5 +1,6 @@
 package com.itsfive.back.service;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,9 @@ public class TaskActivityService {
 	
 	public TaskActivity addTaskActivity(Long taskId,User user,String description) throws JsonProcessingException {  
 		objectMapper.registerModule(module);
+		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S"));
 		Task task = taskRepository.findById(taskId).get();
+		
 		TaskActivity taskActivity = new TaskActivity(description,user,task);
 		taskActivityRepository.save(taskActivity);
  		PusherConfig.setObj().trigger("task_"+taskId, "new_activity",objectMapper.writeValueAsString(taskActivity));
@@ -43,6 +46,6 @@ public class TaskActivityService {
 	}
 	
 	public List<TaskActivity> getTaskActivities(Long taskId) {
-		return taskActivityRepository.findByTaskId(taskId); 
+		return taskActivityRepository.findAllByTaskId(taskId); 
 	}
 }
