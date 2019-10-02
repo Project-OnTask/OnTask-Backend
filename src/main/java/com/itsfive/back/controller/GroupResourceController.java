@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.model.GroupResource;
 import com.itsfive.back.model.Task;
 import com.itsfive.back.model.User;
@@ -39,7 +40,7 @@ public class GroupResourceController {
   private GroupResourceRepository taskResRepository;
   
   @PostMapping("/task_resources/{userId}/{taskId}")
-  public void addResourceToTask(@RequestParam("file") MultipartFile file,@PathVariable("userId") long userId,@PathVariable("taskId") long taskId) {
+  public void addResourceToTask(@RequestParam("file") MultipartFile file,@PathVariable("userId") long userId,@PathVariable("taskId") long taskId) throws JsonProcessingException {
       String fileName = fileService.storeFile(file);
 
       String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -49,7 +50,6 @@ public class GroupResourceController {
 
        UploadFileResponse response =  new UploadFileResponse(fileName, fileDownloadUri,
               file.getContentType(), file.getSize());
-       
        groupResourceService.addResource(userId,taskId, fileDownloadUri);
   }
   

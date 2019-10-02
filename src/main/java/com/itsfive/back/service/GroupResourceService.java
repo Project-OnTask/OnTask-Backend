@@ -3,6 +3,7 @@ package com.itsfive.back.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.GroupResource;
 import com.itsfive.back.model.Task;
@@ -22,16 +23,15 @@ public class GroupResourceService {
 	 private TaskRepository taskRepository;
 	 
 	 @Autowired
+	 private TaskActivityService taskActivityService;
+	 
+	 @Autowired
 	 private GroupRepository groupRepository;
 	 
 	 @Autowired
 	 private GroupResourceRepository groupResRepository;
 	  
-//	public void addResource(AddTaskResourceRequest addResReq,String url) {
-	public void addResource(long userId,long taskId,String url) {
-		//User addedBy = userRepository.findById(addResReq.getAddedBy()).get();
-		//Task task = taskRepository.findById(addResReq.getTaskId()).get();
-		
+	public void addResource(long userId,long taskId,String url) throws JsonProcessingException {	 
 		User addedBy = userRepository.findById(userId).get();
 		Task task = taskRepository.findById(taskId).get();
 		Group group = taskRepository.findById(taskId).get().getGroup();
@@ -43,6 +43,8 @@ public class GroupResourceService {
 				url
 		);
 		
-		groupResRepository.save(groupResource);
+		GroupResource rs = groupResRepository.save(groupResource);
+		String description = "<b>"+addedBy.getFName()+"</b> added a resource <b>"+url.split("/")[5]+"</b>"; 
+		taskActivityService.addTaskActivity(taskId, addedBy, description);
 	}
 }
