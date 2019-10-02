@@ -25,6 +25,7 @@ import com.itsfive.back.payload.GetGroupAdminResponse;
 import com.itsfive.back.payload.GetGroupMembersResponse;
 import com.itsfive.back.payload.GetUserResponse;
 import com.itsfive.back.repository.GroupMemberRepository;
+import com.itsfive.back.repository.ManageMembersRequest;
 import com.itsfive.back.service.GroupMemberService;
 
 @RestController
@@ -47,7 +48,7 @@ public class GroupMemberController {
 	}
     
     @PostMapping("/member/admin")
-	public void setMemberAdmin(@RequestBody GroupMember groupMember ) {
+	public void setMemberAdmin(@RequestBody ManageMembersRequest groupMember ) throws JsonProcessingException {
     	groupMemberService.setMemberAdmin(groupMember);
 	}
     
@@ -62,7 +63,7 @@ public class GroupMemberController {
 	}
     
     @PostMapping("/member/member")
-	public void removeMemberAdmin(@RequestBody GroupMember groupMember ) {
+	public void removeMemberAdmin(@RequestBody ManageMembersRequest groupMember ) throws JsonProcessingException {
     	groupMemberService.removeMemberAdmin(groupMember);
 	}
     
@@ -87,7 +88,7 @@ public class GroupMemberController {
     }
     
     @GetMapping("/member/{groupId}/search/{query}")
-	 public Stream<Object> searchGroupMembers(@PathVariable long groupId,@PathVariable String query){
+	 public Stream<Object> searchGroupMembers(@PathVariable long groupId,@PathVariable String query){ 
 		return groupMemberService.searchGroupMembers(groupId, query);
 	 }
 }

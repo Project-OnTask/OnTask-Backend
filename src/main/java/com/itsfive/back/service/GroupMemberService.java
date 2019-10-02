@@ -29,6 +29,7 @@ import com.itsfive.back.payload.GetUserResponse;
 import com.itsfive.back.repository.GroupInviteRepository;
 import com.itsfive.back.repository.GroupMemberRepository;
 import com.itsfive.back.repository.GroupRepository;
+import com.itsfive.back.repository.ManageMembersRequest;
 import com.itsfive.back.repository.UserRepository;
 
 @Service
@@ -93,14 +94,24 @@ public class GroupMemberService {
 		groupMemberRepository.save(admin);
 	}
 	
-	public void setMemberAdmin(GroupMember groupMember) {
-		groupMember.setRole("admin");
-		groupMemberRepository.save(groupMember);
+	public void setMemberAdmin(ManageMembersRequest memberKey) throws JsonProcessingException { 
+		GroupMember member = groupMemberRepository.findByUserIdAndGroupId(memberKey.getUserId(),memberKey.getGroupId()).get();
+		member.setRole("admin");
+		groupMemberRepository.save(member);
+		User user = userRepository.findById(memberKey.getUserId()).get();
+		User addedBy = userRepository.findById(memberKey.getAddedById()).get();
+		String description = "<b>"+addedBy.getFName()+"</b> made <b>"+user.getFName()+"</b> an admin";
+		groupActivityService.addGroupActivity(memberKey.getGroupId(), addedBy, description);
 	}
 	
-	public void removeMemberAdmin(GroupMember groupMember) {
-		groupMember.setRole("member");
-		groupMemberRepository.save(groupMember);
+	public void removeMemberAdmin(ManageMembersRequest memberKey) throws JsonProcessingException {
+		GroupMember member = groupMemberRepository.findByUserIdAndGroupId(memberKey.getUserId(),memberKey.getGroupId()).get();
+		member.setRole("member");
+		groupMemberRepository.save(member); 
+		User user = userRepository.findById(memberKey.getUserId()).get();
+		User addedBy = userRepository.findById(memberKey.getAddedById()).get();
+		String description = "<b>"+user.getFName()+"</b>'s admin privileges were revoked";
+		groupActivityService.addGroupActivity(memberKey.getGroupId(), addedBy, description);
 	}
 	
 	public List<GroupMember> getGroupsByMember(Long userId) {
@@ -157,23 +168,23 @@ public class GroupMemberService {
 	
 	public Stream<Object> searchGroupMembers(long groupId,String query){
 		 List<GroupMember> matches = groupMemberRepository.findAllByGroupId(groupId);
-		 if(matches.isEmpty()) {
-			 throw new AppException(" ");
+		 List<User> musers = new ArrayList<>();
+		 
+		 for(GroupMember match:matches) {
+			 User usr = userRepository.findById(match.getId().getUserId()).get();
+			 musers.add(usr);
 		 }
-		 Stream<Object> users =  matches.stream().map(member -> 
-		 	userRepository.findById(member.getId().getUserId()).get() );
 		 List<User> fil1 = userRepository.findByEmailContaining(query); 
 		 List<User> fil2 = userRepository.findByMobileContaining(query);
 		 fil1.addAll(fil2); 
-		 fil1.retainAll(users.collect(Collectors.toList())); 
-		 
-		 return fil1.stream().map(user -> new GetUserResponse(
-				 ((User) user).getId(),
-				 ((User) user).getFName(), 
-				 ((User) user).getLname(),
-				 ((User) user).getEmail(),
-				 ((User) user).getProPicURL(),
-				 ((User) user).getEmailHash()));
+		 musers.retainAll(fil1);
+		 return musers.stream().map(user -> new GetUserResponse(
+				 user.getId(),
+				  user.getFName(), 
+				  user.getLname(),
+				 user.getEmail(),
+				 user.getProPicURL(),
+				 user.getEmailHash()));
 	}
 
 }
