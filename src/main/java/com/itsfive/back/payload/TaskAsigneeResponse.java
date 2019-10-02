@@ -7,14 +7,25 @@ public class TaskAsigneeResponse {
 	
 	private String propic;
 	
+	private String emailHash;
+	
 	private long userId;
 
-	public TaskAsigneeResponse(String fname, String propic,String lname, long userId) {
+	public TaskAsigneeResponse(String fname, String propic,String emailHash,String lname, long userId) {
 		super();
 		this.fname = fname;
 		this.lname = lname;
 		this.propic = propic;
+		this.emailHash = emailHash;
 		this.userId = userId;
+	}
+
+	public String getEmailHash() {
+		return emailHash;
+	}
+
+	public void setEmailHash(String emailHash) {
+		this.emailHash = emailHash;
 	}
 
 	public String getPropic() {

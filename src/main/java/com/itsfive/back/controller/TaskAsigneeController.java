@@ -25,12 +25,14 @@ import com.itsfive.back.model.TaskAsignee;
 import com.itsfive.back.model.TaskAsigneeKey;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.AddTaskAsigneeRequest;
+import com.itsfive.back.payload.RemoveTaskAsigneeRequest;
 import com.itsfive.back.payload.TaskAsigneeResponse;
 import com.itsfive.back.repository.GroupRepository;
 import com.itsfive.back.repository.TaskAsigneeRepository;
 import com.itsfive.back.repository.TaskRepository;
 import com.itsfive.back.repository.UserRepository;
 import com.itsfive.back.service.GroupActivityService;
+import com.itsfive.back.service.TaskActivityService;
 import com.itsfive.back.service.UserNotificationService;
 
 @RestController
@@ -53,6 +55,9 @@ public class TaskAsigneeController {
 	private GroupActivityService groupActivityService;
 	
 	@Autowired
+	private TaskActivityService taskActivityService;
+	
+	@Autowired
 	private UserNotificationService userNotificationService;
 	
 	@Autowired
@@ -70,17 +75,32 @@ public class TaskAsigneeController {
 		asignee.setAddedBy(addedBy);
 		taskAsRepository.save(asignee);
 		
-		GroupActivity act = groupActivityService.addGroupActivity(addAsReq.getGroupId(),user,"<b>"+user.getFName()+"</b> was assigned to task <b>"+
-		task.getName() + "</b> in <b>"+group.getName()+"</b>"); 
+		String description = "<b>"+user.getFName()+"</b> was assigned to task <b>"+
+				task.getName() + "</b> in group <b>"+group.getName()+"</b>";
+		
+		GroupActivity act = groupActivityService.addGroupActivity(addAsReq.getGroupId(),user,description); 
+		taskActivityService.addTaskActivity(addAsReq.getTaskId(), addedBy, description);
 		userNotificationService.createUserNotificationsForGroupMembers(addAsReq.getGroupId(), act);
 		PusherConfig.setObj().trigger("group_"+addAsReq.getGroupId(), "new_activity",objectMapper.writeValueAsString(act));
 	}
 	
-	@DeleteMapping("/task-asignee/{userId}")
-	public void removeTaskAssignee(@RequestParam("task_id") long taskId,@PathVariable long userId) {
-		TaskAsigneeKey tak = new TaskAsigneeKey(userId,taskId);
+	@PostMapping("/task-asignee/remove/{userId}")
+	public void removeTaskAssignee(@RequestBody RemoveTaskAsigneeRequest req,@PathVariable long userId) throws JsonProcessingException {
+		TaskAsigneeKey tak = new TaskAsigneeKey(userId,req.getTaskId());
 		TaskAsignee ts = taskAsRepository.findById(tak);
 		taskAsRepository.delete(ts);
+		
+		User user = userRepository.findById(userId).get();
+		User removedBy = userRepository.findById(req.getRemovedBy()).get();
+		Task task = taskRepository.findById(req.getTaskId()).get();
+		
+		String description = "<b>"+user.getFName()+"</b> 's access to task <b>"+
+				task.getName() + "</b> was revoked in group <b>"+task.getGroup().getName()+"</b>";
+		
+		GroupActivity act = groupActivityService.addGroupActivity(task.getGroup().getId(),removedBy,description); 
+		taskActivityService.addTaskActivity(req.getTaskId(), removedBy, description);
+		userNotificationService.createUserNotificationsForGroupMembers(task.getGroup().getId(), act);
+		PusherConfig.setObj().trigger("group_"+task.getGroup().getId(), "new_activity",objectMapper.writeValueAsString(act));
 	}
 	
 	@GetMapping("/task-asignee/{taskId}")
@@ -88,7 +108,7 @@ public class TaskAsigneeController {
 		return taskAsRepository.findAllById_taskId(taskId).stream().map(
 				asignee -> {
 					User user = userRepository.findById(asignee.getId().getUserId()).get();
-					return new TaskAsigneeResponse(user.getFName(),user.getProPicURL(),user.getLname(),user.getId());
+					return new TaskAsigneeResponse(user.getFName(),user.getProPicURL(),user.getEmailHash(),user.getLname(),user.getId());
 				}
 		);	
 	}
