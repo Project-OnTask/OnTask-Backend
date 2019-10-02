@@ -1,6 +1,7 @@
 package com.itsfive.back.service;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,11 +63,11 @@ public class TaskService {
 		task.setGroup(group);
 		User user = userRepository.findById(createTaskRequest.getCreatedBy()).get();
 		task.setCreatedBy(user);
-		taskRepository.save(task);
+		Task tk = taskRepository.save(task);
 		String desc = "<b>"+user.getFName()+"</b> added a new task <b>"+task.getName()+"</b> in group <b>"+group.getName()+"</b>";
 		GroupActivity gc = groupActivityService.addGroupActivity(group.getId(), user, desc);
-		taskActivityService.addTaskActivity(group.getId(), user, desc);
-		userNotificationService.createUserNotificationsForGroupAdmins(createTaskRequest.getGroupId(), gc);
+		taskActivityService.addTaskActivity(tk.getId(), user, desc);
+		userNotificationService.createUserNotificationsForGroupMembers(createTaskRequest.getGroupId(), gc);
 	}
 	
 	public List<Task> getAllTasksOfGroup(Long groupId) {
@@ -92,5 +93,14 @@ public class TaskService {
 		task.setCompleted(c_status);
 		taskRepository.save(task);
 		return c_status;
+	}
+
+	public void editTaskDueDate(long editedById,long taskId,Date NewDueDate) throws JsonProcessingException {  
+		Task task = taskRepository.findById(taskId).get();
+		User editedBy = userRepository.findById(editedById).get(); 
+		task.setDueDate(NewDueDate); 
+		taskRepository.save(task);
+		String desc = "<b>"+editedBy.getFName()+"</b> edited task due date";
+		taskActivityService.addTaskActivity(taskId, editedBy, desc);
 	}
 }

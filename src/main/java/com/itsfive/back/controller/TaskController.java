@@ -1,5 +1,6 @@
 package com.itsfive.back.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import com.itsfive.back.model.Task;
 import com.itsfive.back.model.TaskActivity;
 import com.itsfive.back.payload.CreateTaskRequest;
 import com.itsfive.back.payload.EditTaskDescRequest;
+import com.itsfive.back.payload.EditTaskDueDateRequest;
 import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.repository.TaskRepository;
 import com.itsfive.back.service.FileService;
@@ -79,6 +81,11 @@ public class TaskController {
     @PostMapping("/tasks/edit-desc")
     public void editTaskDescription(@RequestBody EditTaskDescRequest Req) throws JsonProcessingException { 
     	taskService.editTaskDescription(Req.getEditedBy(),Req.getTaskId(), Req.getDescription());
+    }
+    
+    @PostMapping("/tasks/{taskId}/edit-due")
+    public void editTaskDueDate(@PathVariable long taskId,@RequestBody EditTaskDueDateRequest req) throws JsonProcessingException { 
+    	taskService.editTaskDueDate(req.getEditedBy(),taskId,req.getDate());
     }
     
     @GetMapping("/tasks/{taskId}/activity")
