@@ -7,8 +7,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.itsfive.back.config.PusherConfig;
 import com.itsfive.back.exception.UserNotFoundException;
 import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.GroupMember;
@@ -34,24 +36,26 @@ public class UserNotificationService {
 	ObjectMapper objectMapper = new ObjectMapper();
 	JavaTimeModule module = new JavaTimeModule();
 	
-	public void createUserNotificationsForGroupMembers(Long groupId,GroupActivity activity) {
+	public void createUserNotificationsForGroupMembers(Long groupId,GroupActivity activity) throws JsonProcessingException {
 		List<GroupMember> members = groupMemberService.getGroupMembersForNotifications(groupId);
 		for (GroupMember member : members)  
         { 
-			if(member.getUser() != null) {
+			if(member.getUser() != null && member.getUser() != activity.getUser() ) {
 				UserNotification notification = new UserNotification(activity,member.getUser());
 				userNotificationRepository.save(notification);
+				PusherConfig.setObj().trigger("user_"+activity.getUser().getId(), "user_notification",objectMapper.writeValueAsString(activity));
 			}
         } 
 	}
 	
-	public void createUserNotificationsForGroupAdmins(Long groupId,GroupActivity activity) {
+	public void createUserNotificationsForGroupAdmins(Long groupId,GroupActivity activity) throws JsonProcessingException {
 		List<GroupMember> admins = groupMemberService.getGroupAdminsForNotifications(groupId);
 		for (GroupMember member : admins)  
         { 
-			if(member.getUser() != null) {
+			if(member.getUser() != null && member.getUser() != activity.getUser()) {
 				UserNotification notification = new UserNotification(activity,member.getUser());
 				userNotificationRepository.save(notification);
+				PusherConfig.setObj().trigger("user_"+activity.getUser().getId(), "user_notification",objectMapper.writeValueAsString(activity));
 			}
         } 
 	}

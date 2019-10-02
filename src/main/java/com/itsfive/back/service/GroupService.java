@@ -11,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.Group;
+import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.User;
 import com.itsfive.back.repository.GroupRepository;
 import com.itsfive.back.repository.UserRepository;
@@ -25,6 +26,9 @@ public class GroupService {
 	
 	@Autowired
 	private GroupActivityService groupActivityService;
+	
+	@Autowired
+	private UserNotificationService userNotificationService;
 	
 	//create group
 	public Group createGroup(Group group,User createdBy) throws JsonProcessingException {
@@ -44,7 +48,8 @@ public class GroupService {
 		User user = userRepository.findById(editedBy).get();
 		group.setDescription(description);
 		groupRepository.save(group);
-		groupActivityService.addGroupActivity(group.getId(),user,"<b>"+user.getFName() + "</b> edited group description");
+		GroupActivity ga = groupActivityService.addGroupActivity(group.getId(),user,"<b>"+user.getFName() + "</b> edited group description");
+		userNotificationService.createUserNotificationsForGroupMembers(id, ga); 
 	}
 	
     //get all groups in which a user is a member
