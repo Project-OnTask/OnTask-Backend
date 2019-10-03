@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,14 +41,7 @@ public class Group extends DateAudit{
     private String description;
     
     @OneToOne
-    @JoinColumn(name = "created_by_id", nullable = false)
     private User created_by;
-    
-	@OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
-	private Set<Notice> notices;
-	
-	@OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
-	private Set<Task> tasks;
     
     public User getCreated_by() {
 		return created_by;

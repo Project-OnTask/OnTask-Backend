@@ -75,9 +75,6 @@ public class User extends DateAudit {
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<UserWork> userWorks;
-	
-	@OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
-	private Set<Group> createdGroups;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<UserEducation> userEducations;
