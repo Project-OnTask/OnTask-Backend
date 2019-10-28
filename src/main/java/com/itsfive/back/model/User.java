@@ -1,3 +1,4 @@
+
 package com.itsfive.back.model;
 
 import com.itsfive.back.model.audit.DateAudit;

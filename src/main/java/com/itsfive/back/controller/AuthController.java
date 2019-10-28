@@ -151,7 +151,7 @@ public class AuthController {
    	 
    	 HTMLMail htmlMail = new HTMLMail(user.getEmail(),"OnTask - Confirm email",content);
    	 
-   	 senderService.sendHTMLMail(htmlMail);
+   	 //senderService.sendHTMLMail(htmlMail);
         
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")

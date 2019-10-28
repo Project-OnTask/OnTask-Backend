@@ -174,6 +174,7 @@ public class UserController {
 		 userRepository.save(usr);
 	 }
 	 
+	 //Get users who are not a specific group
 	 @GetMapping("/users/search/{groupId}/{query}")
 	 public Stream<Object> searchUsers(@PathVariable("groupId") long groupId,@PathVariable("query") String query){
 		 List<User> matches = userRepository.findByEmailContaining(query);

@@ -41,6 +41,7 @@ public class Group extends DateAudit{
     private String description;
     
     @OneToOne
+    @JoinColumn(name = "created_by_id", nullable = false)
     private User created_by;
     
     public User getCreated_by() {
