@@ -12,6 +12,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +29,7 @@ import com.itsfive.back.model.GroupMember;
 import com.itsfive.back.model.GroupMembersKey;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.CreateGroupRequest;
+import com.itsfive.back.payload.EditGroupDataRequest;
 import com.itsfive.back.payload.GetAllGroupsResponse;
 import com.itsfive.back.payload.LoginRequest;
 import com.itsfive.back.payload.UploadFileResponse;
@@ -119,33 +121,24 @@ public class GroupController {
     	return groupService.getGroup(groupId).get();
     }
     
-    @PostMapping("/group/{groupId}/{userId}/change-cover")
-    public void changeGroupCoverPhoto(@RequestParam("file") MultipartFile file,@PathVariable Long groupId,@PathVariable Long userId) {
-    	if(!groupMemberService.isMemberAnAdmin(userId, groupId)) {
-    		throw new BadRequestException("This operation requires priviledge elevation");
-    	}
-    	String fileName = fileService.storeFile(file);
-
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                 .path("/api/downloadFile/")
-                 .path(fileName)
-                 .toUriString();
-
-         UploadFileResponse response =  new UploadFileResponse(fileName, fileDownloadUri,
-                file.getContentType(), file.getSize());
-         Group group = groupService.getGroup(groupId).get();
-         group.setCoverPhoto(response.getFileDownloadUri());
-         groupRepository.save(group);
-    }
-    
     @PostMapping("/groups/{groupId}/edit-desc")
     public void editGroupDescription(@PathVariable long groupId,@RequestParam("editedBy") Long editedBy,@RequestParam("desc") String description) throws JsonProcessingException {	
     	groupService.editGroupDescription(groupId,editedBy,description);
     }
     
+    @PutMapping("/groups/{groupId}")
+    public void editGroupData(@PathVariable long groupId,@RequestBody EditGroupDataRequest req) throws JsonProcessingException {	
+    	groupService.editGroupData(groupId,req.getEditedBy(),req.getName(),req.getDescription());
+    }
+    
     @GetMapping("/groups/{groupId}")
     public Group getGroup(@PathVariable long groupId) {
     	return groupRepository.findById(groupId).get();
+    }
+    
+    @GetMapping("/groups/{groupId}/desc")
+    public String getGroupDescription(@PathVariable long groupId) {
+    	return groupRepository.findById(groupId).get().getDescription();
     }
     
     @GetMapping("/groups/{groupId}/activity")
