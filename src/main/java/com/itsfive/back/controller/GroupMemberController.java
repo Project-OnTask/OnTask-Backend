@@ -25,7 +25,7 @@ import com.itsfive.back.payload.GetGroupAdminResponse;
 import com.itsfive.back.payload.GetGroupMembersResponse;
 import com.itsfive.back.payload.GetUserResponse;
 import com.itsfive.back.repository.GroupMemberRepository;
-import com.itsfive.back.repository.ManageMembersRequest;
+import com.itsfive.back.payload.ManageMembersRequest;
 import com.itsfive.back.service.GroupMemberService;
 
 @RestController
@@ -68,8 +68,8 @@ public class GroupMemberController {
 	}
     
     @DeleteMapping("/member/{groupId}/remove/{memberId}")
-	public void removeMember(@PathVariable("groupId") long groupId,@PathVariable("memberId") long memberId ) {
-    	groupMemberService.removeMember(memberId,groupId);
+	public void removeMember(@PathVariable("groupId") long groupId,@RequestParam("delBy") long deletedById,@PathVariable("memberId") long userId ) throws JsonProcessingException {
+    	groupMemberService.removeMember(userId,groupId,deletedById);
 	}
     
     @GetMapping("/member/{groupId}/is-admin/{userId}")

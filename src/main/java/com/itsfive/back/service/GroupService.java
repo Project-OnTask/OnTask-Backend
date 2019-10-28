@@ -52,6 +52,21 @@ public class GroupService {
 		userNotificationService.createUserNotificationsForGroupMembers(id, ga); 
 	}
 	
+	public void editGroupData(Long id,Long editedBy,String name,String description) throws JsonProcessingException {  
+		Group group = groupRepository.findById(id).get();
+		User user = userRepository.findById(editedBy).get();
+		if(description != null) {
+			group.setDescription(description);
+		}
+		if(name != null ) {
+			group.setName(name);
+		}
+		
+		groupRepository.save(group);
+		GroupActivity ga = groupActivityService.addGroupActivity(group.getId(),user,"<b>"+user.getFName() + "</b> edited group data");
+		userNotificationService.createUserNotificationsForGroupMembers(id, ga); 
+	}
+	
     //get all groups in which a user is a member
 	public List<Group> getGroupsByUser(Long id){
 		return groupRepository.findGroupById(id);
