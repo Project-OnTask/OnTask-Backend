@@ -27,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.itsfive.back.model.audit.DateAudit;
 
 @Entity
-@Table(name = "groups")
+@Table(name = "user_groups")
 public class Group extends DateAudit{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
