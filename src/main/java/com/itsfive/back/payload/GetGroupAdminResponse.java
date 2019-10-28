@@ -2,17 +2,39 @@ package com.itsfive.back.payload;
 
 public class GetGroupAdminResponse {
 	
+	private Long userId;
+	
 	private String fname;
 	
 	private String lname;
 	
+	private String emailHash; 
+	
 	private String propicURL;
 
-	public GetGroupAdminResponse(String fname, String lname, String propicURL) {
+	public GetGroupAdminResponse(Long userId,String fname, String lname, String emailHash,String propicURL) {
 		super();
+		this.userId = userId;
 		this.fname = fname;
 		this.lname = lname;
+		this.emailHash = emailHash;
 		this.propicURL = propicURL;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getEmailHash() {
+		return emailHash;
+	}
+
+	public void setEmailHash(String emailHash) {
+		this.emailHash = emailHash;
 	}
 
 	public String getFname() {

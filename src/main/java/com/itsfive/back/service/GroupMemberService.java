@@ -15,13 +15,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.itsfive.back.config.PusherConfig;
-import com.itsfive.back.exception.AppException;
+import com.itsfive.back.model.Group;
 import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.GroupInvite;
 import com.itsfive.back.model.GroupInviteKey;
 import com.itsfive.back.model.GroupMember;
 import com.itsfive.back.model.GroupMembersKey;
-import com.itsfive.back.model.HTMLMail;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.GetGroupAdminResponse;
 import com.itsfive.back.payload.GetGroupMembersResponse;
@@ -29,7 +28,7 @@ import com.itsfive.back.payload.GetUserResponse;
 import com.itsfive.back.repository.GroupInviteRepository;
 import com.itsfive.back.repository.GroupMemberRepository;
 import com.itsfive.back.repository.GroupRepository;
-import com.itsfive.back.repository.ManageMembersRequest;
+import com.itsfive.back.payload.ManageMembersRequest;
 import com.itsfive.back.repository.UserRepository;
 
 @Service
@@ -125,11 +124,17 @@ public class GroupMemberService {
 	
 	public Stream<Object> getGroupAdmins(long groupId){
 		return groupMemberRepository.findAllByGroupIdAndRole(groupId,"admin").stream().map(
-			member -> new GetGroupAdminResponse(member.getUser().getFName(),member.getUser().getLname(),member.getUser().getProPicURL())
+			member -> new GetGroupAdminResponse(member.getUser().getId(),member.getUser().getFName(),member.getUser().getLname(),member.getUser().getEmailHash(),member.getUser().getProPicURL())
 				);
 	}
 	
 	public Stream<Object> getGroupMembers(long groupId){
+		return groupMemberRepository.findAllByGroupIdAndRole(groupId,"member").stream().map(
+			member -> new GetGroupAdminResponse(member.getUser().getId(),member.getUser().getFName(),member.getUser().getLname(),member.getUser().getEmailHash(),member.getUser().getProPicURL())
+				);
+	}
+	
+	public Stream<Object> getAllGroupMembers(long groupId){
 		return groupMemberRepository.findAllByGroupId(groupId).stream().map(
 			member -> new GetGroupMembersResponse(member.getUser().getId(),member.getUser().getFName(),member.getUser().getLname(),member.getUser().getProPicURL(),member.getRole())
 				);
@@ -161,9 +166,14 @@ public class GroupMemberService {
 		return invite;
 	}
 	
-	public void removeMember(long userId,long groupId) {
+	public void removeMember(long userId,long groupId,long deletedById) throws JsonProcessingException {
 		GroupMember member = groupMemberRepository.findByUserIdAndGroupId(userId, groupId).get();
 		groupMemberRepository.delete(member); 
+		User user = userRepository.findById(userId).get();
+		Group group = groupRepository.findById(groupId).get();
+		User deletedBy = userRepository.findById(deletedById).get();
+		String description = "<b>"+deletedBy.getFName()+"</b> removed <b>"+user.getFName()+"</b> in group <b>"+group.getName()+"</b>";
+		groupActivityService.addGroupActivity(groupId, deletedBy, description);
 	}
 	
 	public Stream<Object> searchGroupMembers(long groupId,String query){

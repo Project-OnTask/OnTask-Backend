@@ -1,6 +1,8 @@
 package com.itsfive.back.payload;
 
 public class TaskAsigneeResponse {
+	private Long id;
+	
 	private String fname;
 	
 	private String lname;
@@ -11,13 +13,22 @@ public class TaskAsigneeResponse {
 	
 	private long userId;
 
-	public TaskAsigneeResponse(String fname, String propic,String emailHash,String lname, long userId) {
+	public TaskAsigneeResponse(Long id,String fname, String propic,String emailHash,String lname, long userId) {
 		super();
+		this.id = id;
 		this.fname = fname;
 		this.lname = lname;
 		this.propic = propic;
 		this.emailHash = emailHash;
 		this.userId = userId;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getEmailHash() {

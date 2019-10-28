@@ -108,7 +108,7 @@ public class TaskAsigneeController {
 		return taskAsRepository.findAllById_taskId(taskId).stream().map(
 				asignee -> {
 					User user = userRepository.findById(asignee.getId().getUserId()).get();
-					return new TaskAsigneeResponse(user.getFName(),user.getProPicURL(),user.getEmailHash(),user.getLname(),user.getId());
+					return new TaskAsigneeResponse(user.getId(),user.getFName(),user.getProPicURL(),user.getEmailHash(),user.getLname(),user.getId());
 				}
 		);	
 	}
