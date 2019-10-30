@@ -40,7 +40,7 @@ public class UserNotificationService {
 		List<GroupMember> members = groupMemberService.getGroupMembersForNotifications(groupId);
 		for (GroupMember member : members)  
         { 
-			if(member.getUser() != null && member.getUser() != activity.getUser() ) {
+			if(member.getUser() != null && !member.getUser().equals(activity.getUser())  ) {
 				UserNotification notification = new UserNotification(activity,member.getUser());
 				userNotificationRepository.save(notification);
 				PusherConfig.setObj().trigger("user_"+activity.getUser().getId(), "user_notification",objectMapper.writeValueAsString(activity));
