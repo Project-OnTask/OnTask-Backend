@@ -43,8 +43,8 @@ public class GroupMemberController {
 	}
     
     @PostMapping("/members")
-    public void createMember(@RequestBody GroupMembersKey groupMember )throws JsonProcessingException {
-    	groupMemberService.addMember(new GroupMember(new GroupMembersKey(groupMember.getUserId(),groupMember.getGroupId())));
+    public void createMember(@RequestParam long addedBy,@RequestBody GroupMembersKey groupMember )throws JsonProcessingException {
+    	groupMemberService.addMember(new GroupMember(new GroupMembersKey(groupMember.getUserId(),groupMember.getGroupId())),addedBy);
 	}
     
     @PostMapping("/member/admin")

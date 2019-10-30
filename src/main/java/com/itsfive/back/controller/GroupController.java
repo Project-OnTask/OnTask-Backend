@@ -88,7 +88,7 @@ public class GroupController {
             	GroupMembersKey key = new GroupMembersKey(createGroupRequest.getMembers()[i],group.getId());
             	GroupMember member = new GroupMember(key);
             	member.setRole("member");
-            	groupMemberService.addMember(member);
+            	groupMemberService.addMember(member,createdBy.get().getId());
             }
         }
         return groupId;

@@ -75,13 +75,14 @@ public class GroupMemberService {
 		return groupMember;
 	}
 	
-	public void addMember(GroupMember member) throws JsonProcessingException {
+	public void addMember(GroupMember member, long addedById) throws JsonProcessingException {
 		objectMapper.registerModule(module);
 		User user = userRepository.findById(member.getId().getUserId()).get(); 
+		User addedBy = userRepository.findById(addedById).get();
 		member.setRole("member"); 
 		groupMemberRepository.save(member);
 		
-		GroupActivity act = groupActivityService.addGroupActivity(member.getId().getGroupId(),user,"<b>"+user.getFName()+"</b> was added to group <b>"+
+		GroupActivity act = groupActivityService.addGroupActivity(member.getId().getGroupId(),addedBy,"<b>"+addedBy.getFName()+"</b> added <b>"+user.getFName()+"</b> to group <b>"+
 		groupRepository.findById(member.getId().getGroupId()).get().getName()+"</b>"); 
 		userNotificationService.createUserNotificationsForGroupMembers(member.getId().getGroupId(), act);
 		userNotificationService.createUserNotification(user, act);
