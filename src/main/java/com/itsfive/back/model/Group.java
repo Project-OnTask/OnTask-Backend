@@ -37,6 +37,10 @@ public class Group extends DateAudit{
     @Size(max = 30)
     private String name;
     
+    
+    @Size(max = 30)
+    private boolean isPrivate; 
+    
     @Size(max = 160)
     private String description;
     

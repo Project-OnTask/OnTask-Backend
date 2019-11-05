@@ -63,8 +63,10 @@ public class GroupService {
 		}
 		
 		groupRepository.save(group);
-		GroupActivity ga = groupActivityService.addGroupActivity(group.getId(),user,"<b>"+user.getFName() + "</b> edited group data");
-		userNotificationService.createUserNotificationsForGroupMembers(id, ga); 
+		if( (name != null) || (description != null) ) {
+			GroupActivity ga = groupActivityService.addGroupActivity(group.getId(),user,"<b>"+user.getFName() + "</b> edited group data");
+			userNotificationService.createUserNotificationsForGroupMembers(id, ga); 
+		}
 	}
 	
     //get all groups in which a user is a member
