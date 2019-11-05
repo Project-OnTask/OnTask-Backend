@@ -184,7 +184,7 @@ public class UserController {
 		 matches.addAll(m_matches);
 		 
 		 matches = matches.stream()
-         .filter(match -> !groupmembers.contains(match))
+        .filter(match -> !groupmembers.contains(match))
          .collect(Collectors.toList());
 		 
 		 return matches.stream().map(user -> new GetUserResponse(
