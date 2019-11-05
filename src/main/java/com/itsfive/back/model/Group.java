@@ -37,8 +37,6 @@ public class Group extends DateAudit{
     @Size(max = 30)
     private String name;
     
-    
-    @Size(max = 30)
     private boolean isPrivate; 
     
     @Size(max = 160)
@@ -77,6 +75,7 @@ public class Group extends DateAudit{
 		this.name = name;
 		this.description = description;
 		this.created_by = created_by;
+		this.isPrivate = false;
 	}
 	
 	public Group() {
