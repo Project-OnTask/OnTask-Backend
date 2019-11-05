@@ -39,22 +39,12 @@ public class TaskController {
 	@Autowired
 	private TaskActivityService taskActivityService;
 	
-	@Autowired
-	private FileService fileService;
 	
 	@Autowired
 	private  TaskRepository taskRepository;
 	
-	@Autowired
-	private GroupMemberService groupMemberService;
-	
     @PostMapping("/tasks")
     public void createTask(@RequestBody CreateTaskRequest createTaskRequest) throws JsonProcessingException {
-    	boolean isAdmin = groupMemberService.isMemberAnAdmin(createTaskRequest.getCreatedBy(),createTaskRequest.getGroupId());
-    	
-    	    	if(!isAdmin) {
-    		throw new BadRequestException("Operation not allowed");
-    	}
     	taskService.createTaskForGroup(createTaskRequest);
     }
     
