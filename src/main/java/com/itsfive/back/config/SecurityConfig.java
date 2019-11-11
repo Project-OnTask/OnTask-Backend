@@ -51,11 +51,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        return super.authenticationManagerBean();
 	    }
 
+	    //Creating password encoder object to encode users' passwords
 	    @Bean
 	    public PasswordEncoder passwordEncoder() {
 	        return new BCryptPasswordEncoder();
 	    }
 	    
+	    //Excluding Swagger and related files from checking for authorization
 	    private static final String[] AUTH_WHITELIST = {
 	            "/swagger-resources/**",
 	            "/swagger-ui.html",
@@ -63,6 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	            "/webjars/**"
 	    };
 
+	    //Excluding set of files from checking for authorization
 	    @Override
 	    protected void configure(HttpSecurity http) throws Exception {
 	        http
