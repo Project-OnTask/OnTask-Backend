@@ -86,6 +86,7 @@ public class AuthController {
     @Autowired
     private MailSenderService senderService;
 
+    //Login with email through web application
     @PostMapping("/auth/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -103,6 +104,7 @@ public class AuthController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
     
+    //Creating a JWT for registered user with the mobile application
     @PostMapping("/auth/signin/mobile")
     public ResponseEntity<?> authenticateMobileUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -120,13 +122,16 @@ public class AuthController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
+    //Register through web application
     @PostMapping("/auth/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) throws AddressException, MessagingException, IOException {
-        if(userRepository.existsByUsername(signUpRequest.getUsername())) {
+    	//Send error response in case of a duplicate user name
+    	if(userRepository.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
         }
 
+    	//Send error response in case of a duplicate email address
         if(userRepository.existsByEmail(signUpRequest.getEmail())) {
             return new ResponseEntity(new ApiResponse(false, "Email Address already in use!"),
                     HttpStatus.BAD_REQUEST);
@@ -138,6 +143,7 @@ public class AuthController {
         user.setEmailHash(MD5Util.md5Hex(signUpRequest.getEmail())); 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         
+        //Composing and sending the email for confirming email address
         String token = UUID.randomUUID().toString();
         user.setConfirmMailToken(token);
         User result = userRepository.save(user);
@@ -151,7 +157,7 @@ public class AuthController {
    	 
    	 HTMLMail htmlMail = new HTMLMail(user.getEmail(),"OnTask - Confirm email",content);
    	 
-   	 //senderService.sendHTMLMail(htmlMail);
+   	 senderService.sendHTMLMail(htmlMail);
         
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
