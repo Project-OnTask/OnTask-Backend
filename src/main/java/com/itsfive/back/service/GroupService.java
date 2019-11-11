@@ -52,7 +52,7 @@ public class GroupService {
 		userNotificationService.createUserNotificationsForGroupMembers(id, ga); 
 	}
 	
-	public void editGroupData(Long id,Long editedBy,String name,String description) throws JsonProcessingException {  
+	public void editGroupData(Long id,Long editedBy,String name,String description,boolean isPrivate) throws JsonProcessingException {  
 		Group group = groupRepository.findById(id).get();
 		User user = userRepository.findById(editedBy).get();
 		if(description != null) {
@@ -60,6 +60,10 @@ public class GroupService {
 		}
 		if(name != null ) {
 			group.setName(name);
+		}
+		
+		if(group.isPrivate() != isPrivate) {
+			group.setPrivate(isPrivate); 
 		}
 		
 		groupRepository.save(group);
