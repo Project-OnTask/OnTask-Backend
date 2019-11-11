@@ -2,6 +2,7 @@ package com.itsfive.back.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,9 +12,11 @@ import java.util.stream.Stream;
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,7 +32,7 @@ import com.itsfive.back.exception.UserNotFoundException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.HTMLMail;
-import com.itsfive.back.model.Task;
+import com.itsfive.back.model.UserTask;
 import com.itsfive.back.model.TaskAsignee;
 import com.itsfive.back.model.User;
 import com.itsfive.back.model.UserEducation;
@@ -76,6 +79,8 @@ public class UserController {
     @Autowired
     private GroupMemberService groupMemberService;
     
+    @Value("${app.frontendURL}")
+    private String frontendURL;
     
     @Autowired
     private TaskAsigneeRepository taskAsRepository;
@@ -118,7 +123,7 @@ public class UserController {
 	    	 String content = "<html>" +
 	                 "<body>" +
 	                 "<p>Hello "+ user.get().getFName()+",</p>" +
-	                 "<p>Click <a href=\"http://localhost:3000/reset-password/?token="+token+"\">here</a> to reset your password</p>" +
+	                 "<p>Click <a href=\"http://"+frontendURL+"/reset-password/?token="+token+"\">here</a> to reset your password</p>" +
 	             "</body>" +
 	         "</html>";
 	    	 
@@ -207,15 +212,49 @@ public class UserController {
 	 }
 	 
 	 @GetMapping("/user/{userId}/tasks")
-	    public List<Task> getAsignedTasks(@PathVariable Long userId) throws JsonProcessingException{ 
+	    public List<UserTask> getAsignedTasks(@PathVariable Long userId) throws JsonProcessingException{ 
 	    	List<TaskAsignee> asTasks = taskAsRepository.findAllByIdUserId(userId);
-	    	List<Task> ids = new ArrayList<Task>();
+	    	List<UserTask> ids = new ArrayList<UserTask>();
 	    	for(int i=0;i<asTasks.size();i++){  
 	            Long tid = asTasks.get(i).getId().getTaskId();
-	            Task task = taskRepository.findById(tid).get();
+	            UserTask task = taskRepository.findById(tid).get();
 	            ids.add(task);
 	        }  
 	    	return ids;
+	    }
+	 
+	 @GetMapping("/user/{userId}/tasks/count")
+	    public int getAsignedTasksCount(@PathVariable Long userId) throws JsonProcessingException{ 
+	    	List<TaskAsignee> asTasks = taskAsRepository.findAllByIdUserId(userId); 
+	    	return asTasks.size();
+	    }
+	 
+	 @GetMapping("/user/{userId}/tasks/completed/count")
+	    public int getUserCompletedTasksCount(@PathVariable Long userId) throws JsonProcessingException{ 
+	    	List<TaskAsignee> asTasks = taskAsRepository.findAllByIdUserId(userId); 
+	    	List<UserTask> completed = new ArrayList<UserTask>();
+	    	for(int i=0;i<asTasks.size();i++){  
+	            Long tid = asTasks.get(i).getId().getTaskId();
+	            UserTask task = taskRepository.findById(tid).get();
+	            if(task.isCompleted()) {
+	            	  completed.add(task);
+	            }
+	        }  
+	    	return completed.size();
+	    }
+	 
+	 @GetMapping("/user/{userId}/tasks/overdue/count")
+	    public int getUserOverdueTasksCount(@PathVariable Long userId) throws JsonProcessingException{ 
+	    	List<TaskAsignee> asTasks = taskAsRepository.findAllByIdUserId(userId); 
+	    	List<UserTask> overdue = new ArrayList<UserTask>();
+	    	for(int i=0;i<asTasks.size();i++){  
+	            Long tid = asTasks.get(i).getId().getTaskId();
+	            UserTask task = taskRepository.findById(tid).get();
+	            if(task.getDueDate().before(new Date())) {
+	            	  overdue.add(task);
+	            }
+	        }  
+	    	return overdue.size();
 	    }
 	 
 	 @PostMapping("/user/{userId}/basic-info")
@@ -232,6 +271,15 @@ public class UserController {
 		 }
 		 if(upReq.getBio() != null) {
 			 user.setBio(upReq.getBio());
+		 }
+		 userRepository.save(user); 
+	 }
+	 
+	 @PostMapping("/users/{userId}/bio")
+	 public void updateUserBio(@PathVariable Long userId,@RequestParam("bio") String bio){ 
+		 User user = userRepository.findById(userId).get();
+		 if(bio != null) {
+			 user.setBio(bio);
 		 }
 		 userRepository.save(user); 
 	 }
