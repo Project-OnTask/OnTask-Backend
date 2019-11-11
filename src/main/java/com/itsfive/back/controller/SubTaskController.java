@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.model.SubTask;
-import com.itsfive.back.model.Task;
+import com.itsfive.back.model.UserTask;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.addSubtaskRequest;
 import com.itsfive.back.repository.SubtaskRepository;
@@ -42,7 +42,7 @@ public class SubTaskController {
 	
 	@PostMapping("/subtasks")
 	public void addSubTask(@RequestBody addSubtaskRequest addSubReq) throws JsonProcessingException {
-		Task task = taskRepository.findById(addSubReq.getTaskId()).get();
+		UserTask task = taskRepository.findById(addSubReq.getTaskId()).get();
 		SubTask subtask = new SubTask(task,addSubReq.getName());
 		subTaskRepository.save(subtask);
 		User user =  userRepository.findById(addSubReq.getAddedBy()).get();

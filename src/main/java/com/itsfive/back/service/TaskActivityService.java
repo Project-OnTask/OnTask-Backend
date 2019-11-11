@@ -12,7 +12,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.itsfive.back.config.PusherConfig;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.GroupActivity;
-import com.itsfive.back.model.Task;
+import com.itsfive.back.model.UserTask;
 import com.itsfive.back.model.TaskActivity;
 import com.itsfive.back.model.User;
 import com.itsfive.back.repository.TaskActivityRepository;
@@ -37,7 +37,7 @@ public class TaskActivityService {
 	public TaskActivity addTaskActivity(Long taskId,User user,String description) throws JsonProcessingException {  
 		objectMapper.registerModule(module);
 		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S"));
-		Task task = taskRepository.findById(taskId).get();
+		UserTask task = taskRepository.findById(taskId).get();
 		
 		TaskActivity taskActivity = new TaskActivity(description,user,task);
 		taskActivityRepository.save(taskActivity);

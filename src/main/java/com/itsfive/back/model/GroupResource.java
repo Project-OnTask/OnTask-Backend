@@ -35,7 +35,7 @@ public class GroupResource extends DateAudit {
     @JoinColumn(name = "task_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-	private Task task;
+	private UserTask task;
     
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "group_id", nullable = false)
@@ -52,7 +52,7 @@ public class GroupResource extends DateAudit {
 		super();
 	}
 
-	public GroupResource(User addedBy, Task task,Group group, @NotBlank String url) {
+	public GroupResource(User addedBy, UserTask task,Group group, @NotBlank String url) {
 		super();
 		this.addedBy = addedBy;
 		this.task = task;
@@ -76,11 +76,11 @@ public class GroupResource extends DateAudit {
 		this.addedBy = addedBy;
 	}
 
-	public Task getTask() {
+	public UserTask getTask() {
 		return task;
 	}
 
-	public void setTask(Task task) {
+	public void setTask(UserTask task) {
 		this.task = task;
 	}
 

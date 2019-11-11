@@ -18,7 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.Group;
-import com.itsfive.back.model.Task;
+import com.itsfive.back.model.UserTask;
 import com.itsfive.back.model.TaskActivity;
 import com.itsfive.back.payload.CreateTaskRequest;
 import com.itsfive.back.payload.EditTaskDescRequest;
@@ -49,12 +49,12 @@ public class TaskController {
     }
     
     @GetMapping("/{group}/tasks")
-    public List<Task> getTasksOfGroup(@PathVariable Long group){
+    public List<UserTask> getTasksOfGroup(@PathVariable Long group){
     	return taskService.getAllTasksOfGroup(group);
     }
     
     @GetMapping("/tasks/{id}")
-    public Task getTaskById(@PathVariable Long id){
+    public UserTask getTaskById(@PathVariable Long id){
     	return taskService.getTaskById(id);
     }
     

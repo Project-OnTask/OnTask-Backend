@@ -26,7 +26,7 @@ public class SubTask extends DateAudit{
     @JoinColumn(name = "task_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-	private Task task;
+	private UserTask task;
     
     private String name;
     
@@ -36,7 +36,7 @@ public class SubTask extends DateAudit{
 		super();
 	}
 
-	public SubTask(Task task, String name) {
+	public SubTask(UserTask task, String name) {
 		super();
 		this.isCompleted = false;
 		this.task = task;
@@ -51,11 +51,11 @@ public class SubTask extends DateAudit{
 		this.id = id;
 	}
 
-	public Task getTask() {
+	public UserTask getTask() {
 		return task;
 	}
 
-	public void setTask(Task task) {
+	public void setTask(UserTask task) {
 		this.task = task;
 	}
 

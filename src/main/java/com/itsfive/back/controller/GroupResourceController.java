@@ -17,7 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.model.GroupResource;
-import com.itsfive.back.model.Task;
+import com.itsfive.back.model.UserTask;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.TaskResourceResponse;
 import com.itsfive.back.payload.UploadFileResponse;

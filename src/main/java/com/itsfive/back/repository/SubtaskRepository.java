@@ -6,9 +6,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.itsfive.back.model.SubTask;
-import com.itsfive.back.model.Task;
+import com.itsfive.back.model.UserTask;
 
 @Repository
 public interface SubtaskRepository extends CrudRepository<SubTask, Long> {
-	public List<SubTask> findAllByTask(Task task);
+	public List<SubTask> findAllByTask(UserTask task);
 }

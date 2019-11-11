@@ -18,7 +18,7 @@ public class TaskTag extends DateAudit{
 	 @ManyToOne
 	 @MapsId("task_id")
 	 @JoinColumn(name = "task_id")
-	 Task task;
+	 UserTask task;
 
 	public TaskTagKey getId() {
 		return id;
@@ -28,11 +28,11 @@ public class TaskTag extends DateAudit{
 		this.id = id;
 	}
 
-	public Task getTask() {
+	public UserTask getTask() {
 		return task;
 	}
 
-	public void setTask(Task task) {
+	public void setTask(UserTask task) {
 		this.task = task;
 	}
 }

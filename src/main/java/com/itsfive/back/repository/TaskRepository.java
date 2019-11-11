@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.itsfive.back.model.Task;
+import com.itsfive.back.model.UserTask;
 
 @Repository
-public interface TaskRepository extends CrudRepository<Task, Long>{
-	public List<Task> findAllByGroupId(Long groupId);
+public interface TaskRepository extends CrudRepository<UserTask, Long>{
+	public List<UserTask> findAllByGroupId(Long groupId);
 }

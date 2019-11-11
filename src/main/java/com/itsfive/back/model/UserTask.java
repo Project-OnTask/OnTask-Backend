@@ -26,7 +26,7 @@ import com.itsfive.back.model.audit.DateAudit;
 
 @Entity
 @Table(name = "task")
-public class Task extends DateAudit{
+public class UserTask extends DateAudit{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -59,6 +59,19 @@ public class Task extends DateAudit{
     private String status;
     
     private boolean isCompleted;
+    
+	public UserTask() {
+		
+	}
+
+	public UserTask(@NotBlank @Size(max = 30) String name, @Size(max = 160) String description, Date startDate,Date dueDate) {
+		super();
+		this.status = "new";
+		this.name = name;
+		this.description = description;
+		this.startDate = startDate;
+		this.dueDate = dueDate;
+	}
 
 	public User getCreatedBy() {
 		return createdBy;
@@ -74,19 +87,6 @@ public class Task extends DateAudit{
 
 	public void setGroup(Group group) {
 		this.group = group;
-	}
-	
-	public Task() {
-		
-	}
-
-	public Task(@NotBlank @Size(max = 30) String name, @Size(max = 160) String description, Date startDate,Date dueDate) {
-		super();
-		this.status = "new";
-		this.name = name;
-		this.description = description;
-		this.startDate = startDate;
-		this.dueDate = dueDate;
 	}
 
 	public boolean isCompleted() {

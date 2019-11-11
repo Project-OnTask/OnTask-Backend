@@ -33,7 +33,7 @@ public class Comment extends DateAudit{
     @JoinColumn(name = "task_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-	private Task task;
+	private UserTask task;
     
 	@Lob 
     private String content;
@@ -42,7 +42,7 @@ public class Comment extends DateAudit{
 		
 	}
 	
-	public Comment(User createdBy, Task task, String content) {
+	public Comment(User createdBy, UserTask task, String content) {
 		super();
 		this.createdBy = createdBy;
 		this.task = task;
@@ -65,11 +65,11 @@ public class Comment extends DateAudit{
 		this.createdBy = createdBy;
 	}
 
-	public Task getTask() {
+	public UserTask getTask() {
 		return task;
 	}
 
-	public void setTask(Task task) {
+	public void setTask(UserTask task) {
 		this.task = task;
 	}
 

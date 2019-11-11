@@ -20,7 +20,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.itsfive.back.config.PusherConfig;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.GroupActivity;
-import com.itsfive.back.model.Task;
+import com.itsfive.back.model.UserTask;
 import com.itsfive.back.model.TaskAsignee;
 import com.itsfive.back.model.TaskAsigneeKey;
 import com.itsfive.back.model.User;
@@ -68,14 +68,14 @@ public class TaskAsigneeController {
 		objectMapper.registerModule(module);
 		User user = userRepository.findById(addAsReq.getUserId()).get();
 		Group group = groupRepository.findById(addAsReq.getGroupId()).get();
-		Task task = taskRepository.findById(addAsReq.getTaskId()).get(); 
+		UserTask task = taskRepository.findById(addAsReq.getTaskId()).get(); 
 	
 		TaskAsignee asignee = new TaskAsignee(new TaskAsigneeKey(user.getId(),addAsReq.getTaskId()));
 		User addedBy = userRepository.findById(addAsReq.getAddedById()).get();
 		asignee.setAddedBy(addedBy);
 		taskAsRepository.save(asignee);
 		
-		String description = "<b>"+user.getFName()+"</b> was assigned to task <b>"+
+		String description = "<b>"+addedBy.getFName()+ "</b> assigned <b>"+ user.getFName()+"</b> to task <b>"+
 				task.getName() + "</b> in group <b>"+group.getName()+"</b>";
 		
 		GroupActivity act = groupActivityService.addGroupActivity(addAsReq.getGroupId(),user,description); 
@@ -92,7 +92,7 @@ public class TaskAsigneeController {
 		
 		User user = userRepository.findById(userId).get();
 		User removedBy = userRepository.findById(req.getRemovedBy()).get();
-		Task task = taskRepository.findById(req.getTaskId()).get();
+		UserTask task = taskRepository.findById(req.getTaskId()).get();
 		
 		String description = "<b>"+user.getFName()+"</b> 's access to task <b>"+
 				task.getName() + "</b> was revoked in group <b>"+task.getGroup().getName()+"</b>";

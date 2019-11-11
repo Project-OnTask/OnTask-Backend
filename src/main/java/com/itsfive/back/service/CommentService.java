@@ -17,7 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itsfive.back.config.PusherConfig;
 import com.itsfive.back.model.Comment;
-import com.itsfive.back.model.Task;
+import com.itsfive.back.model.UserTask;
 import com.itsfive.back.model.User;
 
 @Service
@@ -54,7 +54,7 @@ public class CommentService {
 		ObjectMapper objectMapper = new ObjectMapper();
 		
 		User user = userRepository.findById(postReq.getUserId()).get();
-		Task task = taskRepository.findById(postReq.getTaskId()).get();
+		UserTask task = taskRepository.findById(postReq.getTaskId()).get();
 		Comment comment = new Comment(user,task,postReq.getContent());
 		commentRepository.save(comment);
 		

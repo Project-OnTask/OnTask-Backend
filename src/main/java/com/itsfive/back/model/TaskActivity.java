@@ -30,7 +30,7 @@ public class TaskActivity extends DateAudit{
     @JoinColumn(name = "task_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-	private Task task;
+	private UserTask task;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = true)
@@ -43,7 +43,7 @@ public class TaskActivity extends DateAudit{
 		super();
 	}
 
-	public TaskActivity(Long id, String description, Task task, User user) {
+	public TaskActivity(Long id, String description, UserTask task, User user) {
 		super();
 		this.id = id;
 		this.description = description;
@@ -51,7 +51,7 @@ public class TaskActivity extends DateAudit{
 		this.user = user;
 	}
 	
-	public TaskActivity(String description, User user,Task task) {
+	public TaskActivity(String description, User user,UserTask task) {
 		super();
 		this.description = description;
 		this.task = task;
@@ -74,11 +74,11 @@ public class TaskActivity extends DateAudit{
 		this.description = description;
 	}
 
-	public Task getTask() {
+	public UserTask getTask() {
 		return task;
 	}
 
-	public void setTask(Task task) {
+	public void setTask(UserTask task) {
 		this.task = task;
 	}
 

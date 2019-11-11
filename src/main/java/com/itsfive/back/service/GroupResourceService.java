@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.GroupResource;
-import com.itsfive.back.model.Task;
+import com.itsfive.back.model.UserTask;
 import com.itsfive.back.model.User;
 import com.itsfive.back.repository.UserRepository;
 import com.itsfive.back.repository.TaskRepository;
@@ -33,7 +33,7 @@ public class GroupResourceService {
 	  
 	public void addResource(long userId,long taskId,String url) throws JsonProcessingException {	 
 		User addedBy = userRepository.findById(userId).get();
-		Task task = taskRepository.findById(taskId).get();
+		UserTask task = taskRepository.findById(taskId).get();
 		Group group = taskRepository.findById(taskId).get().getGroup();
 		
 		GroupResource groupResource = new GroupResource(
