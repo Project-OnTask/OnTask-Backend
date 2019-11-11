@@ -20,6 +20,7 @@ import java.util.TimeZone;
     FileStorageProperties.class
 })
 public class NewBackendApplication {
+	//Set timezone to UTC
 	@PostConstruct
 	void init() {
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));

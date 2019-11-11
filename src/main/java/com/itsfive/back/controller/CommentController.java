@@ -23,11 +23,13 @@ public class CommentController {
 	@Autowired
 	private CommentService commentService;
 	
+	//Add comment to a specified task discussion
 	@PostMapping("/comments")
 	public void addComment(@RequestBody PostCommentRequest postReq) throws JsonProcessingException {
 		commentService.postComment(postReq);
 	}
 	
+	//Get all comments of a specified task discussion
 	@GetMapping("/comments/{taskId}")
 	public List<GetCommentResponse> getComments(@PathVariable long taskId) {
 		return commentService.getCommentsByTask(taskId);

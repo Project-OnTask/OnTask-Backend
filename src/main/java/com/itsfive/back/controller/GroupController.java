@@ -94,6 +94,7 @@ public class GroupController {
         return groupId;
     }
     
+    //Get all groups of a specified user
     @GetMapping("/{userId}/groups")
     public List<GetAllGroupsResponse> getGroups(@PathVariable Long userId) {
     	List<GroupMember> memRecords = groupMemberService.getGroupsByMember(userId);
@@ -113,6 +114,14 @@ public class GroupController {
     	return res;
     }
     
+    //Get the number of groups in which the user is a member of
+    @GetMapping("/{userId}/groups/count")
+    public int getGroupsCount(@PathVariable Long userId) {
+    	List<GroupMember> memRecords = groupMemberService.getGroupsByMember(userId);
+    	return memRecords.size();
+    }
+    
+    //Check if a group exists for provided group id
     @GetMapping("/exists/group/{groupId}")
     public Group isGroup(@PathVariable Long groupId) {
     	if(groupService.getGroup(groupId) == null) {
@@ -121,14 +130,16 @@ public class GroupController {
     	return groupService.getGroup(groupId).get();
     }
     
+    //Edit group description
     @PostMapping("/groups/{groupId}/edit-desc")
     public void editGroupDescription(@PathVariable long groupId,@RequestParam("editedBy") Long editedBy,@RequestParam("desc") String description) throws JsonProcessingException {	
     	groupService.editGroupDescription(groupId,editedBy,description);
     }
     
+    //Edit group details
     @PutMapping("/groups/{groupId}")
     public void editGroupData(@PathVariable long groupId,@RequestBody EditGroupDataRequest req) throws JsonProcessingException {	
-    	groupService.editGroupData(groupId,req.getEditedBy(),req.getName(),req.getDescription());
+    	groupService.editGroupData(groupId,req.getEditedBy(),req.getName(),req.getDescription(),req.isPrivate());
     }
     
     @GetMapping("/groups/{groupId}")
@@ -141,6 +152,7 @@ public class GroupController {
     	return groupRepository.findById(groupId).get().getDescription();
     }
     
+    //Get group activity of a specified group
     @GetMapping("/groups/{groupId}/activity")
     public List<GroupActivity> getGroupActivity(@PathVariable long groupId) { 
     	return groupActivityRepository.findByGroupId(groupId);
