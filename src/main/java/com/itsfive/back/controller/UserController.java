@@ -16,21 +16,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itsfive.back.exception.AppException;
 import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.exception.UserNotFoundException;
-import com.itsfive.back.model.Group;
-import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.HTMLMail;
 import com.itsfive.back.model.UserTask;
 import com.itsfive.back.model.TaskAsignee;
@@ -40,17 +35,15 @@ import com.itsfive.back.model.UserWork;
 import com.itsfive.back.payload.AddEducationRequest;
 import com.itsfive.back.payload.AddWorkplaceRequest;
 import com.itsfive.back.payload.BasicUserInfoUpdateReq;
+import com.itsfive.back.payload.GetAssignedTasksResponse;
 import com.itsfive.back.payload.GetProPicResponse;
 import com.itsfive.back.payload.GetUserResponse;
 import com.itsfive.back.payload.PasswordResetRequest;
-import com.itsfive.back.payload.TaskAsigneeResponse;
 import com.itsfive.back.payload.UpdateEmailRequest;
 import com.itsfive.back.payload.UpdatePasswordRequest;
-import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.payload.UserContactUpdateRequest;
 import com.itsfive.back.payload.UserWebPresenceUpdateReq;
 import com.itsfive.back.payload.VerifyMobileRequest;
-import com.itsfive.back.repository.GroupMemberRepository;
 import com.itsfive.back.repository.TaskAsigneeRepository;
 import com.itsfive.back.repository.TaskRepository;
 import com.itsfive.back.repository.UserEducationRepository;
@@ -58,14 +51,11 @@ import com.itsfive.back.repository.UserRepository;
 import com.itsfive.back.repository.UserWorkRepository;
 import com.itsfive.back.security.CurrentUser;
 import com.itsfive.back.security.UserPrincipal;
-import com.itsfive.back.service.FileService;
 import com.itsfive.back.service.GroupMemberService;
 import com.itsfive.back.service.MailSenderService;
-import com.itsfive.back.service.UserNotificationService;
 import com.itsfive.back.service.UserService;
 import com.nexmo.client.NexmoClientException;
 
-import io.jsonwebtoken.lang.Collections;
 
 @RestController
 @RequestMapping("/api")
@@ -219,6 +209,19 @@ public class UserController {
 	            Long tid = asTasks.get(i).getId().getTaskId();
 	            UserTask task = taskRepository.findById(tid).get();
 	            ids.add(task);
+	        }  
+	    	return ids;
+	    }
+	 
+	 @GetMapping("/user/{userId}/d-tasks")
+	    public List<GetAssignedTasksResponse> getAssignedTasks(@PathVariable Long userId) throws JsonProcessingException{ 
+	    	List<TaskAsignee> asTasks = taskAsRepository.findAllByIdUserId(userId);
+	    	List<GetAssignedTasksResponse> ids = new ArrayList<GetAssignedTasksResponse>();
+	    	for(int i=0;i<asTasks.size();i++){  
+	            Long tid = asTasks.get(i).getId().getTaskId();
+	            UserTask task = taskRepository.findById(tid).get();
+	            GetAssignedTasksResponse rs = new GetAssignedTasksResponse(task.getGroup().getId(),task);
+	            ids.add(rs);
 	        }  
 	    	return ids;
 	    }
