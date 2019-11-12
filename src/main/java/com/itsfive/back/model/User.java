@@ -36,7 +36,6 @@ public class User extends DateAudit {
 	private String mobile;
 
 	@Size(max = 40)
-	// @Email
 	@Column(name = "email", unique = true)
 	private String email;
 

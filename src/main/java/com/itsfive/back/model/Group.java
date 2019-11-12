@@ -64,12 +64,6 @@ public class Group extends DateAudit{
 
 	private String coverPhoto;
     
-//    @ManyToMany(mappedBy = "joinedGroups")
-//    Set<User> members;
-    
-//    @OneToMany(mappedBy = "group")
-//    Set<GroupMember> role;
-    
 	public Group(@NotBlank @Size(max = 30) String name, @Size(max = 160) String description,User created_by) {
 		super();
 		this.name = name;

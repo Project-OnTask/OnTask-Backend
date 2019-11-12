@@ -97,12 +97,9 @@ public class GroupMemberService {
 		GroupActivity act = groupActivityService.addGroupActivity(member.getId().getGroupId(), addedBy,
 				"<b>" + addedBy.getFName() + "</b> added <b>" + user.getFName() + "</b> to group <b>"
 						+ groupRepository.findById(member.getId().getGroupId()).get().getName() + "</b>");
+		
 		userNotificationService.createUserNotificationsForGroupMembers(member.getId().getGroupId(), act);
 		userNotificationService.createUserNotification(user, act);
-		PusherConfig.setObj().trigger("user_" + member.getId().getUserId(), "group_add",
-				objectMapper.writeValueAsString(act));
-		PusherConfig.setObj().trigger("group_" + member.getId().getGroupId(), "new_activity",
-				objectMapper.writeValueAsString(act));
 	}
 
 	//Add an administrator to the group
