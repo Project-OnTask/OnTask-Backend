@@ -4,7 +4,7 @@ import com.pusher.rest.Pusher;
 
 //This pusher object is used throughout the application
 public class PusherConfig {
-	public static Pusher pusher = new Pusher("812414", "1f56dbce61dcd7d6da58", "6ae18872d1d3f335110e");
+	public static Pusher pusher = new Pusher("898049", "979175850cb82f80c70a", "12d219090c835dc6f539");
 	
 	public PusherConfig() {
 
