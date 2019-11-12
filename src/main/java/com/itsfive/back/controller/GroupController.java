@@ -142,11 +142,34 @@ public class GroupController {
     	groupService.editGroupData(groupId,req.getEditedBy(),req.getName(),req.getDescription(),req.isPrivate());
     }
     
+    //Get group details of a group
     @GetMapping("/groups/{groupId}")
     public Group getGroup(@PathVariable long groupId) {
     	return groupRepository.findById(groupId).get();
     }
     
+    //Get the status of a group
+    @GetMapping("/groups/{groupId}/status")
+    public boolean getGroupStatus(@PathVariable long groupId) {
+    	return groupRepository.findById(groupId).get().isPrivate();
+    }
+    
+  //Get the name of a group
+    @GetMapping("/groups/{groupId}/name")
+    public String getGroupName(@PathVariable long groupId) {
+    	return groupRepository.findById(groupId).get().getName();
+    }
+    
+  //Get the status of a group
+    @PostMapping("/groups/{groupId}/status/{status}")
+    public boolean getGroupStatus(@PathVariable long groupId,@PathVariable("status") boolean status) {
+    	Group g = groupRepository.findById(groupId).get();
+    	g.setPrivate(status); 
+    	groupRepository.save(g);
+    	return groupRepository.findById(groupId).get().isPrivate();
+    }
+    
+    //Get group description
     @GetMapping("/groups/{groupId}/desc")
     public String getGroupDescription(@PathVariable long groupId) {
     	return groupRepository.findById(groupId).get().getDescription();
