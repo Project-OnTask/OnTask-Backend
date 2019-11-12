@@ -48,6 +48,7 @@ public class NoticeService {
 		noticeRepository.save(note);
 		GroupActivity act = groupActivityService.addGroupActivity(group.getId(),createdBy,"<b>"+createdBy.getFName() + "</b> posted announcement <b>" + addNoteReq.getTitle()+"</b> in group <b>"+group.getName()+"</b>"  );
 		userNotificationService.createUserNotificationsForGroupMembers(addNoteReq.getGroupId(), act);
+		userNotificationService.publishToGroupActivity(addNoteReq.getGroupId(), act); 
 	}
 
 	public List<GetNoticesResponse> getNoticesByGroup(long groupId) {

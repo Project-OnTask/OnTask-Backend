@@ -75,13 +75,22 @@ public class TaskAsigneeController {
 		asignee.setAddedBy(addedBy);
 		taskAsRepository.save(asignee);
 		
-		String description = "<b>"+addedBy.getFName()+ "</b> assigned <b>"+ user.getFName()+"</b> to task <b>"+
-				task.getName() + "</b> in group <b>"+group.getName()+"</b>";
+		String description = "";
+		
+		if(addedBy.getId() == user.getId()) {
+			description = "<b>"+addedBy.getFName()+ "</b>was self assigned to task <b>"+
+					task.getName() + "</b> in group <b>"+group.getName()+"</b>";
+		}
+		else {
+			description = "<b>"+addedBy.getFName()+ "</b> assigned <b>"+ user.getFName()+"</b> to task <b>"+
+					task.getName() + "</b> in group <b>"+group.getName()+"</b>";
+		}
+				
 		
 		GroupActivity act = groupActivityService.addGroupActivity(addAsReq.getGroupId(),user,description); 
 		taskActivityService.addTaskActivity(addAsReq.getTaskId(), addedBy, description);
 		userNotificationService.createUserNotificationsForGroupMembers(addAsReq.getGroupId(), act);
-		PusherConfig.setObj().trigger("group_"+addAsReq.getGroupId(), "new_activity",objectMapper.writeValueAsString(act));
+		userNotificationService.publishToGroupActivity(addAsReq.getGroupId(), act); 
 	}
 	
 	@PostMapping("/task-asignee/remove/{userId}")

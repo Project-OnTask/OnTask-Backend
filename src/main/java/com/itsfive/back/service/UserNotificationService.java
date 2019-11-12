@@ -79,4 +79,8 @@ public class UserNotificationService {
 		UserNotification notification = new UserNotification(activity,user);
 		userNotificationRepository.save(notification);
 	}
+	
+	public void publishToGroupActivity(long groupId,GroupActivity act) throws JsonProcessingException {
+		PusherConfig.setObj().trigger("group_"+groupId, "new_activity",objectMapper.writeValueAsString(act));
+	}
 }
