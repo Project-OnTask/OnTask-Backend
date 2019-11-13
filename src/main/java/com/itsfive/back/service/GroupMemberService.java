@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,6 +22,7 @@ import com.itsfive.back.model.GroupInvite;
 import com.itsfive.back.model.GroupInviteKey;
 import com.itsfive.back.model.GroupMember;
 import com.itsfive.back.model.GroupMembersKey;
+import com.itsfive.back.model.HTMLMail;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.GetGroupAdminResponse;
 import com.itsfive.back.payload.GetGroupMembersResponse;
@@ -46,6 +48,9 @@ public class GroupMemberService {
 	@Autowired
 	private GroupRepository groupRepository;
 
+    @Value("${app.frontendURL}")
+    private String frontendURL;
+    
 	@Autowired
 	private UserNotificationService userNotificationService;
 
@@ -69,20 +74,14 @@ public class GroupMemberService {
 		groupInviteRepository.delete(invite);
 		User user = userRepository.findById(mkey.getUserId()).get();
 
-		//Create Group Activity
-		GroupActivity activity = groupActivityService.addGroupActivity(
-				invite.getId().getGroupId(), 
-				user,
-				"<b>" + user.getFName() + "</b> was added to group <b>"
-						+ groupRepository.findById(mkey.getGroupId()).get().getName() + "</b>"
-		);
+		String description = "<b>" + user.getFName() + "</b> was added to group <b>"
+				+ groupRepository.findById(mkey.getGroupId()).get().getName() + "</b>";
+		
+		GroupActivity activity = groupActivityService.addGroupActivity(invite.getId().getGroupId(), user, description);
 		
 		//Set activity as notification for group members
 		userNotificationService.createUserNotificationsForGroupMembers(invite.getId().getGroupId(), activity);
 		
-		//Distribute notification through Pusher
-		PusherConfig.setObj().trigger("group_" + mkey.getGroupId(), "new_activity",
-				objectMapper.writeValueAsString(activity));
 		return groupMember;
 	}
 
@@ -197,6 +196,27 @@ public class GroupMemberService {
 		groupInviteRepository.save(invite);
 		return invite;
 	}
+	
+	//Create and send invite link to selected users
+		public void createAndSendInviteLink(long userId, long groupId, long receiverId) throws MessagingException {
+			User createdBy = userRepository.findById(userId).get();
+			User receiver = userRepository.findById(receiverId).get();
+			Group group = groupRepository.findById(groupId).get();
+			String token = UUID.randomUUID().toString();
+			GroupInviteKey inv = new GroupInviteKey(groupId, token);
+			GroupInvite invite = new GroupInvite(inv, createdBy);
+			groupInviteRepository.save(invite);
+			String content = "<html>" +
+	                 "<body>" +
+	                 "<p>"+ createdBy.getFName()+" invited you to join group <b>"+group.getName()+"</b></p>" +
+	                 "<p>Click <a href=\"http://"+frontendURL+"/groups/"+ groupId +"/?itoken="+token+"\">here</a> to accept the invitation</p>" +
+	             "</body>" +
+	         "</html>";
+	    	 
+	    	 HTMLMail htmlMail = new HTMLMail(receiver.getEmail(),"OnTask - Group Invitation for "+group.getName(),content);
+	    	 
+	    	 senderService.sendHTMLMail(htmlMail);
+		}
 
 	//Remove a member from a group
 	public void removeMember(long userId, long groupId, long deletedById) throws JsonProcessingException {

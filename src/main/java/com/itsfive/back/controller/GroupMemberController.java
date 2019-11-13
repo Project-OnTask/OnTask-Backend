@@ -26,6 +26,7 @@ import com.itsfive.back.payload.GetGroupMembersResponse;
 import com.itsfive.back.payload.GetUserResponse;
 import com.itsfive.back.repository.GroupMemberRepository;
 import com.itsfive.back.payload.ManageMembersRequest;
+import com.itsfive.back.payload.SendInvitationEmailRequest;
 import com.itsfive.back.service.GroupMemberService;
 
 @RestController
@@ -94,6 +95,12 @@ public class GroupMemberController {
     @PostMapping("/member/{groupId}/join")
     public GroupInvite createInviteLink(@RequestParam("created_by") long createdBy,@PathVariable Long groupId) throws MessagingException {
     	return groupMemberService.createInviteLink(createdBy,groupId);
+    }
+    
+    //Send email invitations to selected users
+    @PostMapping("/member/{groupId}/join-email")
+    public void InviteUsersViaEmail(@RequestBody SendInvitationEmailRequest req) throws MessagingException {
+    	groupMemberService.createAndSendInviteLink(req.getcreatedById(),req.getGroupId(),req.getReceiverId());
     }
     
     //Search group members of a group

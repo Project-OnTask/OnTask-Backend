@@ -6,6 +6,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.itsfive.back.model.audit.DateAudit;
 
 @Entity
@@ -28,6 +31,7 @@ public class GroupMember extends DateAudit{
 	 
 	 @ManyToOne
 	 @MapsId("group_id")
+	 @OnDelete(action = OnDeleteAction.CASCADE)
 	 @JoinColumn(name = "group_id")
 	 Group group;
 	 
