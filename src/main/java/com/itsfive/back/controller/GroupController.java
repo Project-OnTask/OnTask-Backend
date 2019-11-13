@@ -3,12 +3,8 @@ package com.itsfive.back.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itsfive.back.exception.BadRequestException;
-import com.itsfive.back.exception.UserNotFoundException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.GroupMember;
@@ -30,11 +23,9 @@ import com.itsfive.back.model.GroupMembersKey;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.CreateGroupRequest;
 import com.itsfive.back.payload.EditGroupDataRequest;
+import com.itsfive.back.payload.EditGroupPrivacyRequest;
 import com.itsfive.back.payload.GetAllGroupsResponse;
-import com.itsfive.back.payload.LoginRequest;
-import com.itsfive.back.payload.UploadFileResponse;
 import com.itsfive.back.repository.GroupActivityRepository;
-import com.itsfive.back.repository.GroupMemberRepository;
 import com.itsfive.back.repository.GroupRepository;
 import com.itsfive.back.service.FileService;
 import com.itsfive.back.service.GroupActivityService;
@@ -56,16 +47,10 @@ public class GroupController {
 	private UserService userService;
 	
 	@Autowired
-	private GroupActivityService groupActivityService;
-	
-	@Autowired
 	private GroupActivityRepository groupActivityRepository;
 	
 	@Autowired
 	private GroupMemberService groupMemberService;
-	
-	@Autowired
-	private FileService fileService;
 	
     @Autowired
     private MailSenderService senderService;
@@ -160,13 +145,10 @@ public class GroupController {
     	return groupRepository.findById(groupId).get().getName();
     }
     
-  //Get the status of a group
-    @PostMapping("/groups/{groupId}/status/{status}")
-    public boolean getGroupStatus(@PathVariable long groupId,@PathVariable("status") boolean status) {
-    	Group g = groupRepository.findById(groupId).get();
-    	g.setPrivate(status); 
-    	groupRepository.save(g);
-    	return groupRepository.findById(groupId).get().isPrivate();
+   //Set the privacy of a group
+    @PostMapping("/groups/{groupId}/status")
+    public boolean setGroupPrivacy(@RequestBody EditGroupPrivacyRequest req) throws JsonProcessingException {
+    	return groupService.setGroupPrivacy(req.getGroupId(), req.getStatus(), req.getChangedById());
     }
     
     //Get group description

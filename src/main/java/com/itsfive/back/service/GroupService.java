@@ -5,11 +5,9 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.User;
@@ -35,11 +33,6 @@ public class GroupService {
 		Group t = groupRepository.save(group);
 		groupActivityService.addGroupActivity(t.getId(),createdBy,"<b>"+createdBy.getFName()+"</b>" + " created group " + "<b>"+t.getName()+"</b>"  );
 		return t;
-	}
-	
-    //delete group
-	public void deleteGroupById(Long id) {
-		groupRepository.deleteById(id);
 	}
 	
     //edit group description
@@ -78,6 +71,22 @@ public class GroupService {
 		return groupRepository.findGroupById(id);
 	}	
     
+	//Set group status
+	public boolean setGroupPrivacy(long groupId,boolean status,long changedById) throws JsonProcessingException {
+    	Group g = groupRepository.findById(groupId).get();
+    	boolean prevStatus = g.isPrivate();
+    	User changedBy = userRepository.findById(changedById).get();
+    	if(status != prevStatus) {
+    		g.setPrivate(status);
+        	groupRepository.save(g);
+        	String description = "<b>"+changedBy.getFName()+"</b> changed group privacy from <b>"+
+        	(prevStatus ? "Private</b>" : "Public</b>")+ " to <b>"+(status ? "Private</b>" : "Public</b>")
+        			+ "in group <b>"+ g.getName() +"</b>";
+        	groupActivityService.addGroupActivity(groupId, changedBy, description);
+    	} 
+    	return groupRepository.findById(groupId).get().isPrivate();
+    }
+	
     //edit group cover photo
 	public String getCoverURL(Long id){
 		return groupRepository.findById(id).get().getCoverPhoto();
