@@ -43,7 +43,7 @@ public class UserNotificationService {
 			if(member.getUser() != null && !member.getUser().equals(activity.getUser())  ) {
 				UserNotification notification = new UserNotification(activity,member.getUser());
 				userNotificationRepository.save(notification);
-				PusherConfig.setObj().trigger("user_"+activity.getUser().getId(), "user_notification",objectMapper.writeValueAsString(activity));
+				PusherConfig.setObj().trigger("user_"+member.getUser().getId(), "user_notification",objectMapper.writeValueAsString(activity));
 			}
         } 
 	}
@@ -55,7 +55,7 @@ public class UserNotificationService {
 			if(member.getUser() != null && member.getUser() != activity.getUser()) {
 				UserNotification notification = new UserNotification(activity,member.getUser());
 				userNotificationRepository.save(notification);
-				PusherConfig.setObj().trigger("user_"+activity.getUser().getId(), "user_notification",objectMapper.writeValueAsString(activity));
+				PusherConfig.setObj().trigger("user_"+member.getUser().getId(), "user_notification",objectMapper.writeValueAsString(activity));
 			}
         } 
 	}
