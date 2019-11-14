@@ -156,7 +156,7 @@ public class AuthController {
         "</html>";
    	 
    	 HTMLMail htmlMail = new HTMLMail(user.getEmail(),"OnTask - Confirm email",content);
-   	 
+   	     
    	 senderService.sendHTMLMail(htmlMail);
         
         URI location = ServletUriComponentsBuilder
