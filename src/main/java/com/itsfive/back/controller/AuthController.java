@@ -1,16 +1,20 @@
 package com.itsfive.back.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.itsfive.back.config.PusherConfig;
 import com.itsfive.back.exception.AppException;
 import com.itsfive.back.model.HTMLMail;
 import com.itsfive.back.model.User;
 import com.itsfive.back.payload.ApiResponse;
 import com.itsfive.back.payload.JwtAuthenticationResponse;
 import com.itsfive.back.payload.LoginRequest;
+import com.itsfive.back.payload.MobileLoginRequest;
 import com.itsfive.back.payload.MobileSignupRequest;
 import com.itsfive.back.payload.MobileSignupResponse;
 import com.itsfive.back.payload.SignUpRequest;
@@ -142,7 +146,7 @@ public class AuthController {
                 signUpRequest.getEmail(), signUpRequest.getPassword());
         user.setEmailHash(MD5Util.md5Hex(signUpRequest.getEmail())); 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
+       
         //Composing and sending the email for confirming email address
         String token = UUID.randomUUID().toString();
         user.setConfirmMailToken(token);
@@ -205,7 +209,7 @@ public class AuthController {
         //return ResponseEntity.created(location).body(new MobileSignupResponse(result.getId(),response.getRequestId(),true, "User registered successfully"));
     }
     
-    @GetMapping("/auth/mobile/signin/{text}")
+    @GetMapping("/auth/get-qr/{text}")
     public byte[] getQRCodeImage(@PathVariable String text) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 100, 100);
@@ -216,4 +220,14 @@ public class AuthController {
         return pngData;
     }
     
+    @PostMapping("/auth/qr-signin/mobile")
+    public void loginWithMobile(@RequestBody MobileLoginRequest req) throws JsonProcessingException {
+    	ObjectMapper objectMapper = new ObjectMapper();
+		PusherConfig.setObj().trigger(req.getDeviceId(), "login",objectMapper.writeValueAsString(req));
+    }
+    
+    @GetMapping("/auth/get-ip")
+    public String getClientIP(HttpServletRequest request){
+        return request.getRemoteAddr();
+    }    
 }

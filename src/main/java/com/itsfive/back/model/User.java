@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }),
-		@UniqueConstraint(columnNames = { "email" }) })
+@UniqueConstraint(columnNames = { "email" }) })
 public class User extends DateAudit {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +35,15 @@ public class User extends DateAudit {
 	@Column(unique = true)
 	private String mobile;
 
+	// This email field is used for login
 	@Size(max = 40)
 	@Column(name = "email", unique = true)
 	private String email;
+
+	@Size(max = 40)
+	@Email
+	@Column(name = "email_addr", unique = true)
+	private String email_addr;
 
 	@Size(max = 32)
 	@Column(name = "email_hash", unique = true)
@@ -82,6 +88,9 @@ public class User extends DateAudit {
 	@OneToMany(mappedBy = "user")
 	Set<GroupMember> role;
 
+	@Column(name = "is_app_user")
+	private boolean isAppUser;
+	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Roles> roles = new HashSet<>();
@@ -95,6 +104,7 @@ public class User extends DateAudit {
 		this.fname = fname;
 		this.mobile = mobile;
 		this.username = mobile;
+		this.isAppUser = true;
 	}
 
 	public User(Long id, String fname) {
@@ -108,78 +118,15 @@ public class User extends DateAudit {
 		this.username = username;
 		this.email = email;
 		this.password = password;
+		this.isAppUser = false;
 	}
-
-	public String getEmailHash() {
-		return emailHash;
-	}
-
-	public void setEmailHash(String emailHash) {
-		this.emailHash = emailHash;
-	}
-
+	
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getWebsiteLink() {
-		return websiteLink;
-	}
-
-	public void setWebsiteLink(String websiteLink) {
-		this.websiteLink = websiteLink;
-	}
-
-	public String getTwitterLink() {
-		return twitterLink;
-	}
-
-	public void setTwitterLink(String twitterLink) {
-		this.twitterLink = twitterLink;
-	}
-
-	public String getStackOverflowLink() {
-		return stackOverflowLink;
-	}
-
-	public void setStackOverflowLink(String stackOverflowLink) {
-		this.stackOverflowLink = stackOverflowLink;
-	}
-
-	public String getGithubLink() {
-		return githubLink;
-	}
-
-	public void setGithubLink(String githubLink) {
-		this.githubLink = githubLink;
-	}
-
-	public String getLinkedInLink() {
-		return linkedInLink;
-	}
-
-	public void setLinkedInLink(String linkedInLink) {
-		this.linkedInLink = linkedInLink;
-	}
-
-	public String getBio() {
-		return bio;
-	}
-
-	public void setBio(String bio) {
-		this.bio = bio;
 	}
 
 	public String getLname() {
@@ -189,27 +136,23 @@ public class User extends DateAudit {
 	public void setLname(String lname) {
 		this.lname = lname;
 	}
-
-	public String getProPicURL() {
-		return proPicURL;
+	
+	public String getEmail_addr() {
+		return email_addr;
 	}
 
-	public void setProPicURL(String proPicURL) {
-		this.proPicURL = proPicURL;
+	public void setEmail_addr(String email_addr) {
+		this.email_addr = email_addr;
 	}
 
-	public String getFName() {
-		return fname;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setFName(String fname) {
-		this.fname = fname;
+	public void setUsername(String username) {
+		this.username = username;
 	}
-
-	public void setName(String name) {
-		this.fname = name;
-	}
-
+	
 	public String getEmail() {
 		return email;
 	}
@@ -256,6 +199,90 @@ public class User extends DateAudit {
 
 	public void setMailEnabled(boolean enabled) {
 		this.enabledMail = enabled;
+	}
+
+	public String getWebsiteLink() {
+		return websiteLink;
+	}
+
+	public void setWebsiteLink(String websiteLink) {
+		this.websiteLink = websiteLink;
+	}
+
+	public String getTwitterLink() {
+		return twitterLink;
+	}
+
+	public void setTwitterLink(String twitterLink) {
+		this.twitterLink = twitterLink;
+	}
+
+	public String getStackOverflowLink() {
+		return stackOverflowLink;
+	}
+
+	public void setStackOverflowLink(String stackOverflowLink) {
+		this.stackOverflowLink = stackOverflowLink;
+	}
+
+	public String getGithubLink() {
+		return githubLink;
+	}
+
+	public void setGithubLink(String githubLink) {
+		this.githubLink = githubLink;
+	}
+
+	public String getLinkedInLink() {
+		return linkedInLink;
+	}
+
+	public void setLinkedInLink(String linkedInLink) {
+		this.linkedInLink = linkedInLink;
+	}
+
+	public String getEmailHash() {
+		return emailHash;
+	}
+
+	public void setEmailHash(String emailHash) {
+		this.emailHash = emailHash;
+	}
+	
+	public String getBio() {
+		return bio;
+	}
+
+	public void setBio(String bio) {
+		this.bio = bio;
+	}
+
+	public String getProPicURL() {
+		return proPicURL;
+	}
+
+	public void setProPicURL(String proPicURL) {
+		this.proPicURL = proPicURL;
+	}
+
+	public String getFName() {
+		return fname;
+	}
+
+	public void setFName(String fname) {
+		this.fname = fname;
+	}
+
+	public void setName(String name) {
+		this.fname = name;
+	}
+	
+	public boolean isAppUser() {
+		return isAppUser;
+	}
+
+	public void setAppUser(boolean isAppUser) {
+		this.isAppUser = isAppUser;
 	}
 
 	public Set<Roles> getRoles() {
