@@ -131,7 +131,7 @@ public class UserController {
 	 public void resetPwd(@RequestBody PasswordResetRequest resetReq) {
 		 userService.resetPassword(resetReq);;
 	 }
-	 
+	 //--------------------
 	 @PostMapping("/user/change-email")
 	 public void updateEmail(@RequestBody UpdateEmailRequest updateEmailReq) {
 		userService.updateEmail(updateEmailReq);
@@ -349,5 +349,18 @@ public class UserController {
 	 public List<UserWork> getUserWork(@PathVariable long userId) {
 		 User user = userRepository.findById(userId).get();
 		 return userWorkRepository.findByUser(user);
+	 }
+	 
+	 @PostMapping("/users/{userId}/add-outlook/{code}")
+	 public void setOutlookCode(@PathVariable("userId") long userId,@PathVariable("code") String code){
+		 User user = userRepository.findById(userId).get();
+		 user.setOutlookCode(code); 
+		 userRepository.save(user);
+	 }
+	 
+	 @GetMapping("/users/{userId}/outlook")
+	 public String getOutlookCode(@PathVariable("userId") long userId){
+		 User user = userRepository.findById(userId).get();
+		 return user.getOutlookCode(); 
 	 }
 }
