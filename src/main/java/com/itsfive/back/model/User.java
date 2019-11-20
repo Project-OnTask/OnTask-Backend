@@ -40,6 +40,7 @@ public class User extends DateAudit {
 	@Column(name = "email", unique = true)
 	private String email;
 
+	// This contains the actual email for both web and mobile users
 	@Size(max = 40)
 	@Email
 	@Column(name = "email_addr", unique = true)
@@ -78,6 +79,9 @@ public class User extends DateAudit {
 
 	@Column(name = "linkedin_link")
 	private String linkedInLink;
+	
+	@Column(name = "outlook_code")
+	private String outlookCode;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<UserWork> userWorks;
@@ -121,6 +125,14 @@ public class User extends DateAudit {
 		this.isAppUser = false;
 	}
 	
+	public String getOutlookCode() {
+		return outlookCode;
+	}
+
+	public void setOutlookCode(String outlookCode) {
+		this.outlookCode = outlookCode;
+	}
+
 	public Long getId() {
 		return id;
 	}

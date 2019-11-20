@@ -213,7 +213,7 @@ public class GroupMemberService {
 	             "</body>" +
 	         "</html>";
 	    	 
-	    	 HTMLMail htmlMail = new HTMLMail(receiver.getEmail(),"OnTask - Group Invitation for "+group.getName(),content);
+	    	 HTMLMail htmlMail = new HTMLMail(receiver.getEmail_addr(),"OnTask - Group Invitation for "+group.getName(),content);
 	    	 
 	    	 senderService.sendHTMLMail(htmlMail);
 		}

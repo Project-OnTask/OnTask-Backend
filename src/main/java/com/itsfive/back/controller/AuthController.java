@@ -145,6 +145,7 @@ public class AuthController {
         User user = new User(signUpRequest.getFName(), signUpRequest.getUsername(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());
         user.setEmailHash(MD5Util.md5Hex(signUpRequest.getEmail())); 
+        user.setEmail_addr(signUpRequest.getEmail()); 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
        
         //Composing and sending the email for confirming email address
