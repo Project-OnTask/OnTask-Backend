@@ -1,5 +1,6 @@
 package com.itsfive.back.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.pusher.rest.Pusher;
 import com.itsfive.back.repository.TaskRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.itsfive.back.config.PusherConfig;
 import com.itsfive.back.model.Comment;
 import com.itsfive.back.model.UserTask;
@@ -52,6 +54,10 @@ public class CommentService {
 	public void postComment(PostCommentRequest postReq) throws JsonProcessingException {
 	
 		ObjectMapper objectMapper = new ObjectMapper();
+		JavaTimeModule module = new JavaTimeModule();
+		
+		objectMapper.registerModule(module);
+		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S"));
 		
 		User user = userRepository.findById(postReq.getUserId()).get();
 		UserTask task = taskRepository.findById(postReq.getTaskId()).get();
