@@ -82,5 +82,4 @@ public class TaskController {
     public List<TaskActivity> getTaskActivities(@PathVariable long taskId){ 
     	return taskActivityService.getTaskActivities(taskId);
     }
- 
 }

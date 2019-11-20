@@ -1,36 +1,24 @@
 package com.itsfive.back.service;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.api.client.util.DateTime;
-import com.google.api.services.tasks.TasksRequest;
-import com.google.api.services.tasks.TasksRequestInitializer;
-import com.google.api.services.tasks.model.Task;
-import com.itsfive.back.config.PusherConfig;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.GroupActivity;
-import com.itsfive.back.model.SubTask;
 import com.itsfive.back.model.UserTask;
-import com.itsfive.back.model.TaskActivity;
 import com.itsfive.back.model.User;
-import com.itsfive.back.model.UserNotification;
 import com.itsfive.back.payload.CreateTaskRequest;
 import com.itsfive.back.repository.GroupRepository;
 import com.itsfive.back.repository.SubtaskRepository;
 import com.itsfive.back.repository.TaskRepository;
-import com.itsfive.back.repository.UserNotificationRepository;
 import com.itsfive.back.repository.UserRepository;
-import com.pusher.rest.Pusher;
 
 @Service
 public class TaskService {
@@ -107,5 +95,6 @@ public class TaskService {
 		String desc = "<b>"+editedBy.getFName()+"</b> edited task due date";
 		taskActivityService.addTaskActivity(taskId, editedBy, desc);
 	}
-	
+
 }
+
