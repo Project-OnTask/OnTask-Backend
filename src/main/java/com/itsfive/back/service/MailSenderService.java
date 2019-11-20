@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import com.itsfive.back.model.HTMLMail;
 import com.itsfive.back.model.SimpleMail;
 
 @Service
+@EnableAsync
 public class MailSenderService {
 
     @Autowired
