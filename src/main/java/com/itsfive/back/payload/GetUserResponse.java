@@ -9,9 +9,22 @@ public class GetUserResponse {
 	
 	private String email;
 
+	private boolean isAppUser;
+
 	private String propicURL;
 	
 	private String emailHash;
+	
+	public GetUserResponse(long userId, String fname, String lname,String email,boolean isAppUser,String propicURL,String emailHash) {
+		super();
+		this.userId = userId;
+		this.fname = fname;
+		this.lname = lname;
+		this.isAppUser = isAppUser;
+		this.email = email;
+		this.propicURL = propicURL;
+		this.emailHash = emailHash;
+	}
 	
 	public GetUserResponse(long userId, String fname, String lname,String email,String propicURL,String emailHash) {
 		super();
@@ -71,5 +84,11 @@ public class GetUserResponse {
 		this.propicURL = propicURL;
 	}
 	
-	
+	public boolean isAppUser() {
+		return isAppUser;
+	}
+
+	public void setAppUser(boolean isAppUser) {
+		this.isAppUser = isAppUser;
+	}
 }
