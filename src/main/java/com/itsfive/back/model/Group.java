@@ -64,12 +64,12 @@ public class Group extends DateAudit{
 
 	private String coverPhoto;
     
-	public Group(@NotBlank @Size(max = 30) String name, @Size(max = 160) String description,User created_by) {
+	public Group(@NotBlank @Size(max = 30) String name, @Size(max = 160) String description,boolean isPrivate, User created_by) {
 		super();
 		this.name = name;
 		this.description = description;
 		this.created_by = created_by;
-		this.isPrivate = false;
+		this.isPrivate = isPrivate;
 	}
 	
 	public boolean isPrivate() {

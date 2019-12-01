@@ -7,14 +7,17 @@ public class CreateGroupRequest {
 	
 	private String description;
 	
+	private boolean isPrivate;
+
 	private Long members[];
 	
-	public CreateGroupRequest(Long userId, String name, String description,Long[] members) {
+	public CreateGroupRequest(Long userId, String name, String description,boolean isPrivate,Long[] members) {
 		super();
 		this.userId = userId;
 		this.name = name;
 		this.description = description;
 		this.members = members;
+		this.isPrivate = isPrivate;
 	}
 
 	public Long getUserId() {
@@ -41,6 +44,14 @@ public class CreateGroupRequest {
 		this.description = description;
 	}
 
+	public boolean isPrivate() {
+		return isPrivate;
+	}
+
+	public void setPrivate(boolean isPrivate) {
+		this.isPrivate = isPrivate;
+	}
+	
 	public Long[] getMembers() {
 		return members;
 	}
