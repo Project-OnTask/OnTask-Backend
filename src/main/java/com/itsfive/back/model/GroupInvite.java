@@ -20,6 +20,9 @@ public class GroupInvite extends DateAudit{
 	 //@JoinColumn(name = "created_by")
 	    @ManyToOne
 	private User createdBy;
+	    
+	    @ManyToOne
+		private User receiver;
 	 
 		@ManyToOne
 		 @MapsId("group_id")
@@ -27,17 +30,30 @@ public class GroupInvite extends DateAudit{
 		 private Group group;
 		 
 
+	 public GroupInvite(GroupInviteKey id,User createdBy,User receiver){
+		 this.id = id;
+		 this.createdBy = createdBy;
+		 this.receiver = receiver;
+	 }
+	 
 	 public GroupInvite(GroupInviteKey id,User createdBy){
 		 this.id = id;
 		 this.createdBy = createdBy;
-		 
 	 }
 	 
 	 public GroupInvite() {
 		 
 	 }
 	 
-	 public GroupInviteKey getId() {
+	 public User getReceiver() {
+		return receiver;
+	}
+
+	public void setReceiver(User receiver) {
+		this.receiver = receiver;
+	}
+
+	public GroupInviteKey getId() {
 		return id;
 	}
 

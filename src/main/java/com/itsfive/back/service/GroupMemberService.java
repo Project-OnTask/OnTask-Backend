@@ -2,6 +2,7 @@ package com.itsfive.back.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.itsfive.back.config.PusherConfig;
+import com.itsfive.back.exception.BadRequestException;
 import com.itsfive.back.model.Group;
 import com.itsfive.back.model.GroupActivity;
 import com.itsfive.back.model.GroupInvite;
@@ -67,6 +69,10 @@ public class GroupMemberService {
 	public GroupMember addMemberByToken(String itoken, long userId) throws JsonProcessingException {
 		objectMapper.registerModule(module);
 		GroupInvite invite = groupInviteRepository.findByIdItoken(itoken);
+		Optional<GroupMember> t = groupMemberRepository.findByUserIdAndGroupId(userId, invite.getId().getGroupId());
+		if(invite.getReceiver().getId() != userId || t.isPresent() ) {
+			throw new BadRequestException("This invite link is not for you");
+		} 
 		GroupMembersKey mkey = new GroupMembersKey(userId, invite.getId().getGroupId());
 		GroupMember groupMember = new GroupMember(mkey);
 		groupMember.setRole("member");
@@ -116,6 +122,19 @@ public class GroupMemberService {
 		User addedBy = userRepository.findById(memberKey.getAddedById()).get();
 		String description = "<b>" + addedBy.getFName() + "</b> made <b>" + user.getFName() + "</b> an admin";
 		groupActivityService.addGroupActivity(memberKey.getGroupId(), addedBy, description);
+	}
+	
+	public boolean checkGroupMembership(long groupId, long userId) {
+		boolean isMemberPresent = groupMemberRepository.findByUserIdAndGroupId(userId, groupId).isPresent();
+		boolean isGroupPrivate = groupRepository.findById(groupId).get().isPrivate();
+		if( isMemberPresent || !isGroupPrivate ) {
+			System.out.println("Yeah");
+    		return true;
+    	}
+    	else {
+    		System.out.println("Nah");
+    		throw new BadRequestException("Not a group Member");
+    	}
 	}
 
 	//Remove a group member from administrator role
@@ -204,7 +223,7 @@ public class GroupMemberService {
 			Group group = groupRepository.findById(groupId).get();
 			String token = UUID.randomUUID().toString();
 			GroupInviteKey inv = new GroupInviteKey(groupId, token);
-			GroupInvite invite = new GroupInvite(inv, createdBy);
+			GroupInvite invite = new GroupInvite(inv, createdBy, receiver);
 			groupInviteRepository.save(invite);
 			String content = "<html>" +
 	                 "<body>" +
@@ -225,8 +244,15 @@ public class GroupMemberService {
 		User user = userRepository.findById(userId).get();
 		Group group = groupRepository.findById(groupId).get();
 		User deletedBy = userRepository.findById(deletedById).get();
-		String description = "<b>" + deletedBy.getFName() + "</b> removed <b>" + user.getFName() + "</b> in group <b>"
-				+ group.getName() + "</b>";
+		String description = "";
+		if(deletedBy.getId() == user.getId()) {
+			description = "<b>" + deletedBy.getFName() + "</b> left group <b>"
+					+ group.getName() + "</b>";
+		}
+		else {
+			description = "<b>" + deletedBy.getFName() + "</b> removed <b>" + user.getFName() + "</b> in group <b>"
+					+ group.getName() + "</b>";
+		}
 		groupActivityService.addGroupActivity(groupId, deletedBy, description);
 	}
 
