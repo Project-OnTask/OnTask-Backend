@@ -62,20 +62,12 @@ public class GroupController {
     	if(!createdBy.isPresent()) {
     		throw new BadRequestException("There is no user for provided id");
     	}
-    	Group group = new Group(createGroupRequest.getName(),createGroupRequest.getDescription(),createdBy.get());
+    	Group group = new Group(createGroupRequest.getName(),createGroupRequest.getDescription(),createGroupRequest.isPrivate(),createdBy.get());
         Long groupId = groupService.createGroup(group,createdBy.get()).getId();   
     	GroupMembersKey AdminKey = new GroupMembersKey(createdBy.get().getId(),groupId);
     	GroupMember Admin = new GroupMember(AdminKey); 	
     	Admin.setRole("admin");
     	groupMemberService.addAdmin(Admin);
-        if(createGroupRequest.getMembers() != null) {
-        	for(int i=0;i<createGroupRequest.getMembers().length;i++) { 
-            	GroupMembersKey key = new GroupMembersKey(createGroupRequest.getMembers()[i],group.getId());
-            	GroupMember member = new GroupMember(key);
-            	member.setRole("member");
-            	groupMemberService.addMember(member,createdBy.get().getId());
-            }
-        }
         return groupId;
     }
     

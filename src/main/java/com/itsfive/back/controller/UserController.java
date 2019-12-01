@@ -169,14 +169,14 @@ public class UserController {
 		 userRepository.save(usr);
 	 }
 	 
-	 //Get users who are not a specific group
+	 //Get users who are not in a specific group
 	 @GetMapping("/users/search/{groupId}/{query}")
 	 public Stream<Object> searchUsers(@PathVariable("groupId") long groupId,@PathVariable("query") String query){
 		 List<User> matches = userRepository.findByEmailContaining(query);
-		 List<User> m_matches = userRepository.findByMobileContaining(query);
+		 //List<User> m_matches = userRepository.findByMobileContaining(query);
 		 List<User> groupmembers = groupMemberService.getGroupMembersAsUsers(groupId);
 		 
-		 matches.addAll(m_matches);
+		 //matches.addAll(m_matches);
 		 
 		 matches = matches.stream()
         .filter(match -> !groupmembers.contains(match))
@@ -187,6 +187,7 @@ public class UserController {
 				 user.getFName(),
 				 user.getLname(),
 				 user.getEmail(),
+				 user.isAppUser(),
 				 user.getProPicURL(),
 				 user.getEmailHash()));
 	 }
