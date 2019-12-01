@@ -83,12 +83,17 @@ public class GroupMemberController {
     //Check of given user is an admin of the group
     @GetMapping("/member/{groupId}/is-admin/{userId}")
 	public boolean isAdmin(@PathVariable Long groupId,@PathVariable Long userId ) {
-    	if(groupMemberRepository.findByUserIdAndGroupId(userId, groupId).get().getRole().equals( "admin")) {
+    	if(groupMemberRepository.findByUserIdAndGroupId(userId, groupId).get().getRole().equals("admin")) {
     		return true;
     	}
     	else {
     		return false;
     	}
+	}
+    
+    @GetMapping("/member/{groupId}/is-member/{userId}")
+	public boolean isMember(@PathVariable("groupId") Long groupId,@PathVariable("userId") Long userId ) {
+    	return groupMemberService.checkGroupMembership(groupId, userId); 
 	}
     
     //Create invitation link
